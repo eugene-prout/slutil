@@ -23,16 +23,14 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
         "SUSPENDED": "orange3",
         "STOPPED": "red3"
     }
-    goal_color = status_color_map[job.status]
-    formatted_status = f"[{goal_color}]{job.status}[/{goal_color}]"
 
-    def ellipsis_text(text: str):
-        return Text(text, overflow="ellipsis", no_wrap=True)
+    def ellipsis_text(text: str, style=""):
+        return Text(text, overflow="ellipsis", no_wrap=True, style=style)
 
     if verbose:
         return (
             Text(str(job.slurm_id)),
-            Text(formatted_status),
+            Text(job.status, status_color_map[job.status]),
             Text(job.description),
             Text(job.submitted_timestamp),
             Text(job.git_tag),
@@ -41,7 +39,7 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
     else:
         return (
             ellipsis_text(str(job.slurm_id)),
-            ellipsis_text(formatted_status),
+            ellipsis_text(job.status, status_color_map[job.status]),
             ellipsis_text(job.description),
             ellipsis_text(job.submitted_timestamp),
             ellipsis_text(job.git_tag),
