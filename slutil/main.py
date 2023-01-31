@@ -117,7 +117,8 @@ def status(slurm_id: int):
     try:
         job = next(x for x in all_jobs if x.slurm_id == slurm_id)
     except StopIteration:
-        click.echo("Job not found in database")
+        console = Console()
+        console.print("[red]Error: Job not found in database[/red]")
         exit(1)
     end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
     if job.status not in end_states:
@@ -211,7 +212,7 @@ def start_cli():
     global CSV_PATH
     try:
         try:
-            subprocess.call(["sinfo"])
+            subprocess.run(["sinfo"], check=True)
         except FileNotFoundError:
             raise click.UsageError("Slurm accessed required but cannot access Slurm")
         f = open(CSV_PATH, 'a+')
