@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from rich.text import Text
 from functools import total_ordering
 from rich import box
+import os
 
 def get_git_short_hash():
     return subprocess.check_output(["git", "describe", "--always"]).strip().decode()
@@ -155,8 +156,8 @@ def report(count: int, verbose: bool):
     end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
     for job in all_jobs:
         if job.status not in end_states:
-            pass
-            # job.status = job_status(job.slurm_id)
+            # pass
+            job.status = job_status(job.slurm_id)
 
     write_csv(all_jobs)
   
@@ -207,10 +208,10 @@ def submit(sbatch_file: str, description: str):
     click.echo(f"Successfully submitted job {slurm_id}")
 
 if __name__ == '__main__':
-    try:
-        subprocess.call(["sinfo"])
-    except FileNotFoundError:
-        raise click.UsageError("Slurm accessed required but cannot access Slurm")        
+    # try:
+        # subprocess.call(["sinfo"])
+    # except FileNotFoundError:
+        # raise click.UsageError("Slurm accessed required but cannot access Slurm")        
 
     CSV_PATH = ".slutil_job_history.csv"
     f = open(CSV_PATH, 'a+')
