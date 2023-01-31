@@ -16,7 +16,7 @@ def get_git_short_hash():
     return subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
 
-CSV_NAME = ""
+CSV_PATH = ".slutil_job_history.csv"
 
 @click.group()
 def cli():
@@ -207,14 +207,19 @@ def submit(sbatch_file: str, description: str):
 
     click.echo(f"Successfully submitted job {slurm_id}")
 
+def start_cli():
+    global CSV_PATH
+    try:
+        try:
+            subprocess.call(["sinfo"])
+        except FileNotFoundError:
+            raise click.UsageError("Slurm accessed required but cannot access Slurm")
+        f = open(CSV_PATH, 'a+')
+        f.close()
+        cli()
+    except Exception as e:
+        console = Console()
+        console.print(f"[red]Error: {str(e)}[/red]")
+
 if __name__ == '__main__':
-    # try:
-        # subprocess.call(["sinfo"])
-    # except FileNotFoundError:
-        # raise click.UsageError("Slurm accessed required but cannot access Slurm")        
-
-    CSV_PATH = ".slutil_job_history.csv"
-    f = open(CSV_PATH, 'a+')
-    f.close()
-
-    cli()
+    start_cli()
