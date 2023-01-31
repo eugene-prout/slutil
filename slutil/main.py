@@ -17,6 +17,7 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
         "COMPLETED": "green3",
         "COMPLETING": "chartreuse3",
         "FAILED": "red3",
+        "CANCELLED+": "grey54",
         "PENDING": "blue3",
         "PREEMPTED": "red3",
         "RUNNING": "yellow3",
