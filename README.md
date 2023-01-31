@@ -15,7 +15,7 @@ Commands:
 
 Add metadata to an `sbatch` command and store data in the database
 
-**Must** be used to log job in the database.
+**Must** be used to log jobs in the database.
 
 ```
 Usage: slutil submit [OPTIONS] SBATCH_FILE DESCRIPTION
