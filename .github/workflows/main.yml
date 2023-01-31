@@ -1,0 +1,26 @@
+name: Main CI
+on:
+  push:
+    branches:
+      - main
+jobs:
+  check-pr:
+    name: Validate Release Label and Notes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jefflinse/pr-semver-bump@v1
+        name: Validate Pull Request Metadata
+        with:
+          mode: validate
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+  bump-tag-version:
+    name: Bump and Tag Version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jefflinse/pr-semver-bump@v1
+        name: Bump and Tag Version
+        with:
+          mode: bump
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
