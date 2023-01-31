@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slutil"
+authors = [
+    {name = "Eugene Prout", email = "eugene.prout1@gmail.com"},
+]
+description = "Command-line utility to view slurm jobs"
+version = "0.1.10"
+readme = "README.md"
+requires-python = ">=3.7"
+dynamic = ["dependencies"]
+
+[project.scripts]
+slutil = "slutil.main:start_cli"
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

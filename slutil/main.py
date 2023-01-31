@@ -36,7 +36,7 @@ def job_status(job_id: int):
     output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
     regex_match = re.match(regex_pattern, output)
     
-    return regex_match.group(8)
+    return regex_match.group(8).strip()
 
 """
 Slurm job codes
@@ -88,9 +88,16 @@ class Record():
             description = Text(self.description, overflow="ellipsis", no_wrap=True)
         return [str(self.slurm_id), f"[{goal_color}]{self.status}[/{goal_color}]", description, self.submitted_timestamp.strftime('%y-%m-%d %H:%M'), self.git_tag, self.sbatch]
 
-def create_record_from_line(line: tuple):
+def create_record_from_line(line: list[str]):
     # this should be in a repository
-    return Record(int(line[0]), datetime.strptime(line[1], '%Y-%m-%d %H:%M:%S'), line[2], line[3], line[4], line[5])
+    formatted_line = [val.strip() for val in line]
+    return Record(
+        int(formatted_line[0]),
+        datetime.strptime(formatted_line[1], '%Y-%m-%d %H:%M:%S'), 
+        formatted_line[2], 
+        formatted_line[3], 
+        formatted_line[4], 
+        formatted_line[5])
 
 def read_csv():
     all_jobs = []
@@ -219,8 +226,9 @@ def start_cli():
         f.close()
         cli()
     except Exception as e:
-        console = Console()
-        console.print(f"[red]Error: {str(e)}[/red]")
+        raise e
+        # console = Console()
+        # console.print(f"[red]Error: {str(e)}[/red]")
 
 if __name__ == '__main__':
     start_cli()
