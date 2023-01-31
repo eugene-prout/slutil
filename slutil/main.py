@@ -33,7 +33,7 @@ def job_status(job_id: int):
     607582.batch      batch                    ug          1  COMPLETED      0:0
     """
     regex_pattern = r"^(\s*JobID\s*JobName\s*Partition\s*Account\s*AllocCPUS\s*State\s*ExitCode\s*)(-*\s*){7}(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*){7}$"
-    output = subprocess.check_output(["sacct", "-j", job_id]).strip().decode()
+    output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
     regex_match = re.match(regex_pattern, output)
     
     return regex_match.group(8)
@@ -195,7 +195,7 @@ def submit(sbatch_file: str, description: str):
     DESCRIPTION is a text field describing the job
     """
     repo_stamp = get_git_short_hash()
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.now()
 
     proc = subprocess.run(f'sbatch {sbatch_file}', check=True, capture_output=True, shell=True)
     
@@ -203,7 +203,7 @@ def submit(sbatch_file: str, description: str):
     regex_match = re.match(r"^(Submitted batch job )(\d*)$", proc.stdout.decode("utf-8"))
     slurm_id = regex_match.group(2)
     new_job = Record(slurm_id, timestamp, repo_stamp, sbatch_file, "PENDING", description)
-    with open('slurm_jobs.csv', mode='a') as csvfile:
+    with open(CSV_PATH, mode='a') as csvfile:
         csv.writer(csvfile).writerow(new_job.to_row())
 
     click.echo(f"Successfully submitted job {slurm_id}")
@@ -212,7 +212,7 @@ def start_cli():
     global CSV_PATH
     try:
         try:
-            subprocess.run(["sinfo"], check=True)
+            subprocess.run(["sinfo"], capture_output=True, check=True)
         except FileNotFoundError:
             raise click.UsageError("Slurm accessed required but cannot access Slurm")
         f = open(CSV_PATH, 'a+')
