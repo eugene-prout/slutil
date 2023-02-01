@@ -1,18 +1,12 @@
-name: CI
+name: Semantic Release
+
 on:
   push:
-    branches: [ main ]
+    branches:
+      - master
 
 jobs:
-  Quality:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-  Release:
-    needs: Quality
+  release:
     runs-on: ubuntu-latest
     concurrency: release
 
@@ -23,6 +17,13 @@ jobs:
 
     - name: Python Semantic Release
       uses: relekang/python-semantic-release@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        repository_username: __token__
+        repository_password: ${{ secrets.PYPI_TOKEN }}
+
+    - name: Publish a Python distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         repository_username: __token__
