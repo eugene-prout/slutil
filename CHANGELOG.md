@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (2023-02-01)
+### Feature
+* Fix ci ([`475db08`](https://github.com/eugene-prout/slutil/commit/475db08eb166b918c79b070a3ac1187494d6d236))
+
+### Fix
+* Rename master -> main ([`e6c389c`](https://github.com/eugene-prout/slutil/commit/e6c389c4c4d7f88ef9ee81b2ff0c0c68701b9388))
+
 ## v0.0.7 (2023-02-01)
 ### Fix
 * Make pypi work ([`bc843ae`](https://github.com/eugene-prout/slutil/commit/bc843aef8584bc8750e95d65adf5935f06edd06b))
