@@ -16,7 +16,6 @@ dynamic = ["dependencies", "version"]
 slutil = "slutil.main:start_cli"
 
 [tool.setuptools_scm]
-local_scheme = "no-local-version"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
