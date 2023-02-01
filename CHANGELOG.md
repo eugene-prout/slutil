@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2023-02-01)
+### Feature
+* Add content type to toml ([`6b7d02e`](https://github.com/eugene-prout/slutil/commit/6b7d02edb3b713e0a3b8ad072b2c03f534d368d1))
+
 ## v0.1.1 (2023-02-01)
 ### Fix
 * Add pypi distribution step ([`458007e`](https://github.com/eugene-prout/slutil/commit/458007e6334e1f0dd4801f58fcb00ac201c801e9))
