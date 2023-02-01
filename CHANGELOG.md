@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.0.7 (2023-02-01)
+### Fix
+* Make pypi work ([`bc843ae`](https://github.com/eugene-prout/slutil/commit/bc843aef8584bc8750e95d65adf5935f06edd06b))
+
 ## v0.0.6 (2023-02-01)
 ### Fix
 * Remove unnecessary yaml ([`899a1f2`](https://github.com/eugene-prout/slutil/commit/899a1f22a7c8b37f9695a089f400040bace95a4f))
