@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-02-01)
+### Feature
+* Add README to poetry toml section ([`3807798`](https://github.com/eugene-prout/slutil/commit/38077985703e106d63344f478aa397d748b29eea))
+
 ## v0.4.0 (2023-02-01)
 ### Feature
 * Remove version from poetry section ([`8dceddf`](https://github.com/eugene-prout/slutil/commit/8dceddfd4ca34644bbb304477d8b572249b33c21))
