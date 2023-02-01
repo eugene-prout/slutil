@@ -12,7 +12,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 [tool.poetry]
-version = "0.0.0"
+version = "0.0.2"
 
 [project.scripts]
 slutil = "slutil.main:start_cli"
