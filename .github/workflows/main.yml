@@ -21,10 +21,8 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         repository_username: __token__
         repository_password: ${{ secrets.PYPI_TOKEN }}
-
-    - name: Publish a Python distribution to PyPI
+    
+    - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        repository_username: __token__
-        repository_password: ${{ secrets.PYPI_TOKEN }}
+        password: ${{ secrets.PYPI_API_TOKEN }}
