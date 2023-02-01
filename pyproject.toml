@@ -12,12 +12,12 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 [tool.poetry]
-version = "0.0.3"
 name = "slutil"
 authors = [
     "Eugene Prout <eugene.prout1@gmail.com>",
 ]
 description = "Command-line utility to view slurm jobs"
+version = "0.0.4"
 
 [project.scripts]
 slutil = "slutil.main:start_cli"
