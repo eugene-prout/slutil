@@ -10,11 +10,12 @@ authors = [
 description = "Command-line utility to view slurm jobs"
 readme = "README.md"
 requires-python = ">=3.7"
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "version"]
 
 [project.scripts]
 slutil = "slutil.main:start_cli"
 
+[tool.setuptools_scm]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
