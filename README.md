@@ -1,6 +1,6 @@
 # slutil
 
-A command line utility to view Slurm jobs.
+A command line utility to view Slurm jobs
 
 ```
 Usage: slutil [OPTIONS] COMMAND [ARGS]...
