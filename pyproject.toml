@@ -15,8 +15,15 @@ dynamic = ["dependencies", "version"]
 [project.scripts]
 slutil = "slutil.main:start_cli"
 
-[tool.setuptools_scm]
-local_scheme = "no-local-version"
+[tool.semantic_release]
+version_variable = [
+    "slutil/__init__.py:__version__",
+    "pyproject.toml:version"
+]
+branch = "main"
+repository_url = "https://pypi.org/project/slutil/"
+upload_to_release = true
+build_command = "pip install poetry && poetry build"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
