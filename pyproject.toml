@@ -10,15 +10,13 @@ authors = [
 description = "Command-line utility to view slurm jobs"
 readme = "README.md"
 requires-python = ">=3.7"
-version = "0.0.0"
 
 [project.scripts]
 slutil = "slutil.main:start_cli"
 
 [tool.semantic_release]
 version_variable = [
-    "slutil/__init__.py:__version__",
-    "pyproject.toml:version"
+    "slutil/__init__.py:__version__"
 ]
 branch = "main"
 upload_to_pypi = false
