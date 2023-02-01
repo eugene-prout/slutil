@@ -10,6 +10,13 @@ authors = [
 description = "Command-line utility to view slurm jobs"
 readme = "README.md"
 requires-python = ">=3.7"
+
+[tool.poetry]
+name = "slutil"
+authors = [
+    "Eugene Prout <eugene.prout1@gmail.com>",
+]
+description = "Command-line utility to view slurm jobs"
 version = "0.0.4"
 
 [project.scripts]

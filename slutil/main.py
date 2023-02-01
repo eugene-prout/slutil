@@ -4,7 +4,7 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from slutil.CsvUow import CsvUnitOfWork
-from slutil.services import JobDTO, JobRequestDTO, test_slurm_accessible, report, get_job_status, submit
+from slutil.services import JobDTO, JobRequestDTO, report, get_job, submit
 
 
 @click.group()
@@ -74,7 +74,7 @@ def cmd_status(slurm_id: int, verbose: bool):
     uow = CsvUnitOfWork("")
 
     try:
-        job_status = get_job_status(slurm_id, uow)
+        job_status = get_job(slurm_id, uow)
         table = create_jobs_table(f"Job {slurm_id}", verbose, [job_status])
 
         console = Console()
@@ -122,8 +122,6 @@ def cmd_submit(sbatch_file: str, description: str):
 
 def start_cli():
     try:
-        if not test_slurm_accessible():
-            raise click.UsageError("Slurm accessed required but cannot access Slurm")
         cli()
     except Exception as e:
         raise e
