@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-02-01)
+### Feature
+* Remove version from poetry section ([`8dceddf`](https://github.com/eugene-prout/slutil/commit/8dceddfd4ca34644bbb304477d8b572249b33c21))
+
 ## v0.3.0 (2023-02-01)
 ### Feature
 * Add content type to poetry toml ([`59ecee5`](https://github.com/eugene-prout/slutil/commit/59ecee5c68e28dd6e9b3bbe94a4264dc1114700b))
