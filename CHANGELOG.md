@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2023-02-01)
+### Feature
+* Add content type to poetry toml ([`59ecee5`](https://github.com/eugene-prout/slutil/commit/59ecee5c68e28dd6e9b3bbe94a4264dc1114700b))
+
 ## v0.2.0 (2023-02-01)
 ### Feature
 * Add content type to toml ([`6b7d02e`](https://github.com/eugene-prout/slutil/commit/6b7d02edb3b713e0a3b8ad072b2c03f534d368d1))
