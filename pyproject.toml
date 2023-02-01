@@ -28,7 +28,7 @@ version_variable = [
     "pyproject.toml:version"
 ]
 branch = "main"
-upload_to_pypi = false
+repository_url = "https://pypi.org/project/slutil/"
 upload_to_release = true
 build_command = "pip install poetry && poetry build"
 
