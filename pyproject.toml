@@ -18,7 +18,6 @@ authors = [
     "Eugene Prout <eugene.prout1@gmail.com>",
 ]
 description = "Command-line utility to view slurm jobs"
-long_description_content_type='text/markdown'
 version = "0.3.0"
 
 [project.scripts]
