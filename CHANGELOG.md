@@ -2,6 +2,25 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2023-02-01)
+### Feature
+* Add content type to toml ([`6b7d02e`](https://github.com/eugene-prout/slutil/commit/6b7d02edb3b713e0a3b8ad072b2c03f534d368d1))
+
+## v0.1.1 (2023-02-01)
+### Fix
+* Add pypi distribution step ([`458007e`](https://github.com/eugene-prout/slutil/commit/458007e6334e1f0dd4801f58fcb00ac201c801e9))
+
+## v0.1.0 (2023-02-01)
+### Feature
+* Fix ci ([`475db08`](https://github.com/eugene-prout/slutil/commit/475db08eb166b918c79b070a3ac1187494d6d236))
+
+### Fix
+* Rename master -> main ([`e6c389c`](https://github.com/eugene-prout/slutil/commit/e6c389c4c4d7f88ef9ee81b2ff0c0c68701b9388))
+
+## v0.0.7 (2023-02-01)
+### Fix
+* Make pypi work ([`bc843ae`](https://github.com/eugene-prout/slutil/commit/bc843aef8584bc8750e95d65adf5935f06edd06b))
+
 ## v0.0.6 (2023-02-01)
 ### Fix
 * Remove unnecessary yaml ([`899a1f2`](https://github.com/eugene-prout/slutil/commit/899a1f22a7c8b37f9695a089f400040bace95a4f))
