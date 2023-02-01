@@ -17,9 +17,8 @@ jobs:
           major-label: major
           minor-label: minor
           patch-label: patch
-          - name: Build and Upload to TestPyPI
     
-  build-n-publish:
+  build-and-publish:
     name: Build and publish Python package to PyPI and TestPyPI
     runs-on: ubuntu-latest
     steps:
