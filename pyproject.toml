@@ -17,7 +17,7 @@ authors = [
     "Eugene Prout <eugene.prout1@gmail.com>",
 ]
 description = "Command-line utility to view slurm jobs"
-version = "0.1.0"
+version = "0.1.1"
 
 [project.scripts]
 slutil = "slutil.main:start_cli"

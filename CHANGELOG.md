@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2023-02-01)
+### Fix
+* Add pypi distribution step ([`458007e`](https://github.com/eugene-prout/slutil/commit/458007e6334e1f0dd4801f58fcb00ac201c801e9))
+
 ## v0.1.0 (2023-02-01)
 ### Feature
 * Fix ci ([`475db08`](https://github.com/eugene-prout/slutil/commit/475db08eb166b918c79b070a3ac1187494d6d236))
