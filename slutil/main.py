@@ -115,10 +115,10 @@ def start_cli():
             click.Command(
                 name="submit", 
                 context_settings=None,
-                callback=lambda file, desc: cmd_submit(uow, slurm, file, desc),
+                callback=lambda sbatch_file, desccription: cmd_submit(uow, slurm, sbatch_file, desccription),
                 params=[
-                    click.Argument('sbatch_file', type=click.Path(exists=True)),
-                    click.Argument('description', type=str)  
+                    click.Argument(['sbatch_file'], required=True, type=click.Path(exists=True)),
+                    click.Argument(['description'], required=True, type=str)  
                 ]
             )
         )
@@ -127,7 +127,7 @@ def start_cli():
             click.Command(
                 name="report", 
                 context_settings=None,
-                callback=lambda count, verbose: cmd_report(uow, slurm, count, verbose),
+                callback=lambda count, v: cmd_report(uow, slurm, count, v),
                 params=[
                     click.Option("-c", "--count", default=10),
                     click.Option("-v", "--verbose", is_flag=True, default=False)
@@ -139,19 +139,19 @@ def start_cli():
             click.Command(
                 name="status", 
                 context_settings=None,
-                callback=lambda slurm_id, verbose: cmd_status(uow, slurm, slurm_id, verbose),
+                callback=lambda slurm_id, v: cmd_status(uow, slurm, slurm_id, v),
                 params=[
-                    click.Argument('slurm_id', type=int),
-                    click.Option("-v", "--verbose", is_flag=True, default=False)
+                    click.Argument(['slurm_id'], type=int),
+                    click.Option("-v", "--ver]bose", is_flag=True, default=False)
                 ]
             )
          )
 
         cli()
     except Exception as e:
-        # raise e
-        console = Console()
-        console.print(f"[red]Error: {str(e)}[/red]")
+        raise e
+        # console = Console()
+        # console.print(f"[red]Error: {str(e)}[/red]")
 
 if __name__ == '__main__':
     start_cli()
