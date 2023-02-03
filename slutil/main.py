@@ -4,7 +4,9 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from slutil.CsvUow import CsvUnitOfWork
+from slutil.abstract_uow import AbstractUnitOfWork
 from slutil.slurm import SlurmService
+from slutil.abstract_slurm_service import AbstractSlurmService
 from slutil.services import JobDTO, JobRequestDTO, report, get_job, submit
 
 
@@ -63,17 +65,11 @@ def create_jobs_table(title: str, verbose: bool, jobs: list[JobDTO], caption=Non
     
     return table
 
-
-@cli.command("status")
-@click.argument('slurm_id', type=int)
-@click.option("-v", "--verbose", is_flag=True, default=False)
-def cmd_status(slurm_id: int, verbose: bool):
+def cmd_status(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, slurm_id: int, verbose: bool):
     """Get status of a slurm job.
 
     SLURM_ID is the id of the job to check.
     """
-    uow = CsvUnitOfWork("")
-    slurm = SlurmService()
     try:    
         job_status = get_job(slurm, uow, slurm_id)
         table = create_jobs_table(f"Job {slurm_id}", verbose, [job_status])
@@ -86,14 +82,9 @@ def cmd_status(slurm_id: int, verbose: bool):
         exit(1)
 
 
-@cli.command("report")
-@click.option("-c", "--count", default=10)
-@click.option("-v", "--verbose", is_flag=True, default=False)
-def cmd_report(count: int, verbose: bool):
+def cmd_report(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, count: int, verbose: bool):
     """Get status of multiple jobs
     """
-    uow = CsvUnitOfWork("")
-    slurm = SlurmService()
     jobs = report(slurm, uow, count)
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"
@@ -104,30 +95,63 @@ def cmd_report(count: int, verbose: bool):
     console = Console()
     console.print(table, overflow="ellipsis")
 
-
-@cli.command("submit")
-@click.argument('sbatch_file', type=click.Path(exists=True))
-@click.argument('description', type=str)
-def cmd_submit(sbatch_file: str, description: str):
+def cmd_submit(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, sbatch_file: str, description: str):
     """Submit a slurm job. 
 
     SBATCH_FILE is a path to the .sbatch file for the job
 
     DESCRIPTION is a text field describing the job
     """
-    uow = CsvUnitOfWork("")
-    slurm = SlurmService()
     job_slurm_id = submit(slurm, uow, JobRequestDTO(sbatch_file, description))
     click.echo(f"Successfully submitted job {job_slurm_id}")
 
-
 def start_cli():
     try:
+        uow = CsvUnitOfWork("")
+        from slutil.fake_slurm import FakeSlurm
+        slurm = FakeSlurm()
+
+        cli.add_command(
+            click.Command(
+                name="submit", 
+                context_settings=None,
+                callback=lambda file, desc: cmd_submit(uow, slurm, file, desc),
+                params=[
+                    click.Argument('sbatch_file', type=click.Path(exists=True)),
+                    click.Argument('description', type=str)  
+                ]
+            )
+        )
+
+        cli.add_command(
+            click.Command(
+                name="report", 
+                context_settings=None,
+                callback=lambda count, verbose: cmd_report(uow, slurm, count, verbose),
+                params=[
+                    click.Option("-c", "--count", default=10),
+                    click.Option("-v", "--verbose", is_flag=True, default=False)
+                ]
+            )
+        )
+
+        cli.add_command(
+            click.Command(
+                name="status", 
+                context_settings=None,
+                callback=lambda slurm_id, verbose: cmd_status(uow, slurm, slurm_id, verbose),
+                params=[
+                    click.Argument('slurm_id', type=int),
+                    click.Option("-v", "--verbose", is_flag=True, default=False)
+                ]
+            )
+         )
+
         cli()
     except Exception as e:
-        raise e
-        # console = Console()
-        # console.print(f"[red]Error: {str(e)}[/red]")
+        # raise e
+        console = Console()
+        console.print(f"[red]Error: {str(e)}[/red]")
 
 if __name__ == '__main__':
     start_cli()

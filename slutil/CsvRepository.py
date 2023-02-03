@@ -1,9 +1,10 @@
 from pathlib import Path
 import csv
+from slutil.abstract_repository import AbstractRepository
 from slutil.Record import Record
 from datetime import datetime
 
-class CsvRepository():
+class CsvRepository(AbstractRepository):
     def __init__(self, folder):
         self._csv_path = Path(folder) / ".slutil_job_history.csv"
         f = open(self._csv_path, 'a+')
@@ -11,13 +12,13 @@ class CsvRepository():
         self._jobs = []
         self._load()
 
-    def get(self, job_id):
+    def get(self, job_id: int) -> Record:
         try:
             return next(x for x in self._jobs if x.slurm_id == job_id)
         except StopIteration:
             raise KeyError("No job exists with specified id")
 
-    def add(self, job):
+    def add(self, job: Record):
         self._jobs.append(job)
 
     def _load(self):

@@ -1,18 +1,14 @@
 from slutil.CsvRepository import CsvRepository
+from slutil.abstract_uow import AbstractUnitOfWork
 import csv
 
 
-class CsvUnitOfWork():
+class CsvUnitOfWork(AbstractUnitOfWork):
+    jobs: CsvRepository
     def __init__(self, folder):
         self.jobs = CsvRepository(folder)
 
-    def __enter__(self):
-        pass
-
-    def __exit__(self, *args):
-        pass
-
-    def commit(self):
+    def _commit(self):
         with self.jobs._csv_path.open("w") as f:
             writer = csv.writer(f)
             # writer.writerow(["slurm_id", "submit_time", "repo_commit_tag",

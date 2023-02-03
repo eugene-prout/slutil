@@ -2,6 +2,7 @@ import subprocess
 from datetime import datetime
 from slutil.Record import Record
 from slutil.abstract_slurm_service import AbstractSlurmService
+from slutil.abstract_uow import AbstractUnitOfWork
 from dataclasses import dataclass
 
 @dataclass
@@ -30,7 +31,7 @@ def map_job_to_jobDTO(job: Record) -> JobDTO:
 
 
 
-def get_job(slurm_service: AbstractSlurmService, uow, slurm_id: int) -> JobDTO:
+def get_job(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int) -> JobDTO:
     with uow:
         job = uow.jobs.get(slurm_id)
         end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
@@ -39,7 +40,7 @@ def get_job(slurm_service: AbstractSlurmService, uow, slurm_id: int) -> JobDTO:
         uow.commit()
         return map_job_to_jobDTO(job)
 
-def report(slurm_service: AbstractSlurmService, uow, count: int) -> list[JobDTO]:
+def report(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: int) -> list[JobDTO]:
     with uow:
         all_jobs = uow.jobs.list()
         output = sorted(all_jobs)[:count]
@@ -50,7 +51,7 @@ def report(slurm_service: AbstractSlurmService, uow, count: int) -> list[JobDTO]
         uow.commit()
         return [map_job_to_jobDTO(j) for j in output]
 
-def submit(slurm_service: AbstractSlurmService, uow, req: JobRequestDTO) -> str:
+def submit(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, req: JobRequestDTO) -> str:
     with uow:
         repo_stamp =  subprocess.check_output(["git", "describe", "--always"]).strip().decode()
         timestamp = datetime.now()
