@@ -4,6 +4,7 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from slutil.CsvUow import CsvUnitOfWork
+from slutil.slurm import SlurmService
 from slutil.services import JobDTO, JobRequestDTO, report, get_job, submit
 
 
@@ -72,9 +73,9 @@ def cmd_status(slurm_id: int, verbose: bool):
     SLURM_ID is the id of the job to check.
     """
     uow = CsvUnitOfWork("")
-
-    try:
-        job_status = get_job(slurm_id, uow)
+    slurm = SlurmService()
+    try:    
+        job_status = get_job(slurm, uow, slurm_id)
         table = create_jobs_table(f"Job {slurm_id}", verbose, [job_status])
 
         console = Console()
@@ -92,8 +93,8 @@ def cmd_report(count: int, verbose: bool):
     """Get status of multiple jobs
     """
     uow = CsvUnitOfWork("")
-
-    jobs = report(uow, count)
+    slurm = SlurmService()
+    jobs = report(slurm, uow, count)
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"
     else:
@@ -115,8 +116,8 @@ def cmd_submit(sbatch_file: str, description: str):
     DESCRIPTION is a text field describing the job
     """
     uow = CsvUnitOfWork("")
-
-    job_slurm_id = submit(JobRequestDTO(sbatch_file, description), uow)
+    slurm = SlurmService()
+    job_slurm_id = submit(slurm, uow, JobRequestDTO(sbatch_file, description))
     click.echo(f"Successfully submitted job {job_slurm_id}")
 
 
