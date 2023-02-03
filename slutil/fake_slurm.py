@@ -1,4 +1,4 @@
-from abstract_slurm_service import AbstractSlurmService
+from slutil.abstract_slurm_service import AbstractSlurmService
 import random 
 
 class FakeSlurm(AbstractSlurmService):
