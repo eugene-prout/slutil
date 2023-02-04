@@ -8,12 +8,7 @@ from slutil.abstract_uow import AbstractUnitOfWork
 from slutil.slurm import SlurmService
 from slutil.abstract_slurm_service import AbstractSlurmService
 from slutil.services import JobDTO, JobRequestDTO, report, get_job, submit
-
-
-@click.group()
-def cli():
-    pass
-
+from dataclasses import dataclass
 
 def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, Text, Text, Text]:
     status_color_map = {
@@ -105,53 +100,66 @@ def cmd_submit(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, sbatch_file
     job_slurm_id = submit(slurm, uow, JobRequestDTO(sbatch_file, description))
     click.echo(f"Successfully submitted job {job_slurm_id}")
 
-def start_cli():
-    try:
+
+def command_factory(uow: AbstractUnitOfWork, slurm: AbstractSlurmService) -> click.Group:
+    parent_cmd = click.Group()
+
+    parent_cmd.add_command(
+        click.Command(
+            name="submit", 
+            context_settings=None,
+            callback=lambda sbatch_file, description: cmd_submit(uow, slurm, sbatch_file, description),
+            params=[
+                click.Argument(['sbatch_file'], required=True, type=click.Path(exists=True)),
+                click.Argument(['description'], required=True, type=str)  
+            ]
+        )
+    )
+
+    parent_cmd.add_command(
+        click.Command(
+            name="report", 
+            context_settings=None,
+            callback=lambda c, v: cmd_report(uow, slurm, c, v),
+            params=[
+                click.Option("-c", "--count", default=10),
+                click.Option("-v", "--verbose", is_flag=True, default=False)
+            ]
+        )
+    )
+
+    parent_cmd.add_command(
+        click.Command(
+            name="status", 
+            context_settings=None,
+            callback=lambda slurm_id, v: cmd_status(uow, slurm, slurm_id, v),
+            params=[
+                click.Argument(['slurm_id'], type=int),
+                click.Option("-v", "--ver]bose", is_flag=True, default=False)
+            ]
+        )
+        )
+    return parent_cmd
+
+@dataclass
+class Dependencies():
+    uow: AbstractUnitOfWork
+    slurm: AbstractSlurmService
+
+def build_dependencies(debug: bool) -> Dependencies:
+    if debug:
         uow = CsvUnitOfWork("")
         from slutil.fake_slurm import FakeSlurm
         slurm = FakeSlurm()
+    else:
+        uow = CsvUnitOfWork("")
+        slurm = SlurmService()
+    return Dependencies(uow, slurm)
 
-        cli.add_command(
-            click.Command(
-                name="submit", 
-                context_settings=None,
-                callback=lambda sbatch_file, desccription: cmd_submit(uow, slurm, sbatch_file, desccription),
-                params=[
-                    click.Argument(['sbatch_file'], required=True, type=click.Path(exists=True)),
-                    click.Argument(['description'], required=True, type=str)  
-                ]
-            )
-        )
-
-        cli.add_command(
-            click.Command(
-                name="report", 
-                context_settings=None,
-                callback=lambda count, v: cmd_report(uow, slurm, count, v),
-                params=[
-                    click.Option("-c", "--count", default=10),
-                    click.Option("-v", "--verbose", is_flag=True, default=False)
-                ]
-            )
-        )
-
-        cli.add_command(
-            click.Command(
-                name="status", 
-                context_settings=None,
-                callback=lambda slurm_id, v: cmd_status(uow, slurm, slurm_id, v),
-                params=[
-                    click.Argument(['slurm_id'], type=int),
-                    click.Option("-v", "--ver]bose", is_flag=True, default=False)
-                ]
-            )
-         )
-
-        cli()
-    except Exception as e:
-        raise e
-        # console = Console()
-        # console.print(f"[red]Error: {str(e)}[/red]")
+def start_cli():
+    dependencies = build_dependencies(debug=True)
+    c = command_factory(dependencies.uow, dependencies.slurm)
+    c()
 
 if __name__ == '__main__':
     start_cli()
