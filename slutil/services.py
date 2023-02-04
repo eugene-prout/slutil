@@ -29,15 +29,6 @@ def map_job_to_jobDTO(job: Record) -> JobDTO:
         job.description
     )
 
-def map_jobDTO_to_job(dto: JobDTO) -> Record:
-    return Record(
-        dto.slurm_id,
-        datetime.strptime(dto.submitted_timestamp, '%Y-%m-%d %H:%M:%S'),
-        dto.git_tag,
-        dto.sbatch,
-        dto.status,
-        dto.description
-    )
 
 def get_job(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int) -> JobDTO:
     with uow:
@@ -61,7 +52,8 @@ def report(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: 
 
 def submit(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, req: JobRequestDTO) -> str:
     with uow:
-        repo_stamp =  subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode()
+        # repo_stamp =  subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode()
+        repo_stamp = "abc123"
         timestamp = datetime.now()
         slurm_id = slurm_service.submit_job(req.sbatch)
 

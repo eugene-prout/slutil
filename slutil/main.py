@@ -65,16 +65,11 @@ def cmd_status(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, slurm_id: i
 
     SLURM_ID is the id of the job to check.
     """
-    try:    
-        job_status = get_job(slurm, uow, slurm_id)
-        table = create_jobs_table(f"Job {slurm_id}", verbose, [job_status])
+    job_status = get_job(slurm, uow, slurm_id)
+    table = create_jobs_table(f"Job {slurm_id}", verbose, [job_status])
 
-        console = Console()
-        console.print(table, overflow="ellipsis")
-    except StopIteration:
-        console = Console()
-        console.print("[red]Error: Job not found in database[/red]")
-        exit(1)
+    console = Console()
+    console.print(table, overflow="ellipsis")
 
 
 def cmd_report(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, count: int, verbose: bool):
@@ -120,10 +115,10 @@ def command_factory(uow: AbstractUnitOfWork, slurm: AbstractSlurmService) -> cli
         click.Command(
             name="report", 
             context_settings=None,
-            callback=lambda c, v: cmd_report(uow, slurm, c, v),
+            callback=lambda count, verbose: cmd_report(uow, slurm, count, verbose),
             params=[
-                click.Option("-c", "--count", default=10),
-                click.Option("-v", "--verbose", is_flag=True, default=False)
+                click.Option(["-c", "--count"], default=10),
+                click.Option(["-v", "--verbose"], is_flag=True, default=False)
             ]
         )
     )
@@ -132,10 +127,10 @@ def command_factory(uow: AbstractUnitOfWork, slurm: AbstractSlurmService) -> cli
         click.Command(
             name="status", 
             context_settings=None,
-            callback=lambda slurm_id, v: cmd_status(uow, slurm, slurm_id, v),
+            callback=lambda slurm_id, verbose: cmd_status(uow, slurm, slurm_id, verbose),
             params=[
                 click.Argument(['slurm_id'], type=int),
-                click.Option("-v", "--ver]bose", is_flag=True, default=False)
+                click.Option(["-v", "--verbose"], is_flag=True, default=False)
             ]
         )
         )
@@ -159,7 +154,11 @@ def build_dependencies(debug: bool) -> Dependencies:
 def start_cli():
     dependencies = build_dependencies(debug=True)
     c = command_factory(dependencies.uow, dependencies.slurm)
-    c()
+    try:
+        c()
+    except Exception as e:
+        console = Console()
+        console.print(f"[red]Error: {str(e)}[/red]")
 
 if __name__ == '__main__':
     start_cli()
