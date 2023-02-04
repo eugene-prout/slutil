@@ -5,7 +5,7 @@ class FakeSlurm(AbstractSlurmService):
     @staticmethod
     def get_job_status(job_id: int):
         all_states = ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED+", "PENDING", "PREEMPTED",  "RUNNING", "SUSPENDED", "STOPPED"]
-        return random.choice(all_states)
+        return "COMPLETED"
 
     @staticmethod
     def submit_job(sbatch: str) -> int:
