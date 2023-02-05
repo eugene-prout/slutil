@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from slutil.abstract_repository import AbstractRepository
+from slutil.adapters.abstract_repository import AbstractRepository
+
 
 class AbstractUnitOfWork(ABC):
     jobs: AbstractRepository

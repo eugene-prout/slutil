@@ -1,10 +1,6 @@
-from slutil.Record import Record
-from hypothesis import given
-from hypothesis import strategies
-from slutil.services import JobDTO, get_job, map_job_to_jobDTO, report
+from slutil.model.Record import Record
+from slutil.services.services import JobDTO, get_job, report
 from datetime import datetime
-from unittest.mock import patch
-# @given(sample=strategies.from_type(Record)) 
 
 def test_get_job(in_memory_uow, fake_slurm):
     time = datetime.now()

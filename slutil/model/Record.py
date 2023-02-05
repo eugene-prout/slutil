@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from functools import total_ordering
 from datetime import datetime
-from rich.text import Text
+
 
 @dataclass
 @total_ordering
-class Record():
+class Record:
     slurm_id: int
     submitted_timestamp: datetime
     git_tag: str

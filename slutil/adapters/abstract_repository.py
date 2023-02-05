@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from slutil.Record import Record
+from slutil.model.Record import Record
+
 
 class AbstractRepository(ABC):
     @abstractmethod

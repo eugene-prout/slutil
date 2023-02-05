@@ -1,13 +1,14 @@
 from pathlib import Path
 import csv
-from slutil.abstract_repository import AbstractRepository
-from slutil.Record import Record
+from slutil.adapters.abstract_repository import AbstractRepository
+from slutil.model.Record import Record
 from datetime import datetime
+
 
 class CsvRepository(AbstractRepository):
     def __init__(self, folder):
         self._csv_path = Path(folder) / ".slutil_job_history.csv"
-        f = open(self._csv_path, 'a+')
+        f = open(self._csv_path, "a+")
         f.close()
         self._jobs = []
         self._load()
@@ -22,17 +23,18 @@ class CsvRepository(AbstractRepository):
         self._jobs.append(job)
 
     def _load(self):
-        with open(self._csv_path, mode='r') as csvfile:
+        with open(self._csv_path, mode="r") as csvfile:
             reader = csv.reader(csvfile)
             for line in reader:
                 formatted_line = [val.strip() for val in line]
                 record = Record(
                     int(formatted_line[0]),
-                    datetime.strptime(formatted_line[1], '%Y-%m-%d %H:%M:%S'),
+                    datetime.strptime(formatted_line[1], "%Y-%m-%d %H:%M:%S"),
                     formatted_line[2],
                     formatted_line[3],
                     formatted_line[4],
-                    formatted_line[5])
+                    formatted_line[5],
+                )
                 self._jobs.append(record)
 
     def list(self) -> list[Record]:

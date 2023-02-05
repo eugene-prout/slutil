@@ -1,6 +1,7 @@
-from slutil.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 import subprocess
 import re
+
 
 class SlurmService(AbstractSlurmService):
     @staticmethod
@@ -18,18 +19,22 @@ class SlurmService(AbstractSlurmService):
     @staticmethod
     def submit_job(sbatch: str) -> int:
         if not SlurmService.test_slurm_accessible():
-                raise OSError("Slurm accessed required but cannot access Slurm")
-        
-        proc = subprocess.run(f'sbatch {sbatch}', check=True, capture_output=True, shell=True)        
+            raise OSError("Slurm accessed required but cannot access Slurm")
+
+        proc = subprocess.run(
+            f"sbatch {sbatch}", check=True, capture_output=True, shell=True
+        )
         # proc.stdout should be "Submitted batch job XXXXXX"
-        regex_match = re.match(r"^(Submitted batch job )(\d*)$", proc.stdout.decode("utf-8"))
+        regex_match = re.match(
+            r"^(Submitted batch job )(\d*)$", proc.stdout.decode("utf-8")
+        )
         if regex_match:
             return int(regex_match.group(2))
         raise OSError("sbatch command has unexpected output")
 
     @staticmethod
     def test_slurm_accessible():
-        try: 
+        try:
             subprocess.run(["sinfo"], capture_output=True, check=True)
             return True
         except:

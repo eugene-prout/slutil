@@ -1,20 +1,18 @@
 from click.testing import CliRunner
 from slutil.main import command_factory
-from slutil.CsvUow import CsvUnitOfWork
-from slutil.fake_slurm import FakeSlurm
-import re 
-import os
+from slutil.services.csv_uow import CsvUnitOfWork
+import re
 from datetime import datetime
 
 
-def test_submit_job():
+def test_submit_job(fake_slurm):
     runner = CliRunner()
     with runner.isolated_filesystem():
 
         with open('test.sbatch', 'w') as f:
             f.write('srun ...')
 
-        cmd = command_factory(CsvUnitOfWork(""), FakeSlurm())
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
 
         result = runner.invoke(cmd, ['submit', 'test.sbatch', 'test description'])
         assert result.exit_code == 0
@@ -32,14 +30,14 @@ def test_submit_job():
 
         assert re.match(file_contents_expected, file_contents)
 
-def test_status_job():
+def test_status_job(fake_slurm):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), FakeSlurm())
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
 
         result = runner.invoke(cmd, ['status', '329981'])
         assert result.exit_code == 0
@@ -57,14 +55,14 @@ def test_status_job():
         for d in job_details:
             assert d in result.output
 
-def test_status_job_non_existant():
+def test_status_job_non_existant(fake_slurm):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), FakeSlurm())
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
 
         result = runner.invoke(cmd, ['status', '123456'])
         assert result.exit_code == 1
@@ -78,14 +76,14 @@ def test_status_job_non_existant():
         assert isinstance(result.exception, KeyError)
         assert str(result.exception) == "'No job exists with specified id'"
 
-def test_report():
+def test_report(fake_slurm):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), FakeSlurm())
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
 
         result = runner.invoke(cmd, ['report'])
         assert result.exit_code == 0
@@ -107,10 +105,10 @@ def test_report():
             for d in j:
                 assert d in result.output
 
-def test_report_no_jobs():
+def test_report_no_jobs(fake_slurm):
     runner = CliRunner()
     with runner.isolated_filesystem():
-        cmd = command_factory(CsvUnitOfWork(""), FakeSlurm())
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
 
         result = runner.invoke(cmd, ['report'])
         assert result.exit_code == 0
