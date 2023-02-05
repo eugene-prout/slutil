@@ -1,6 +1,7 @@
 # slutil
 
-A command line utility to view Slurm jobs
+A command line utility to view Slurm jobs.
+
 
 ```
 Usage: slutil [OPTIONS] COMMAND [ARGS]...
@@ -10,6 +11,10 @@ Commands:
   status  Get status of a slurm job.
   submit  Submit a slurm job.
 ```
+
+## Contributing
+
+Pushes to `main` are forbidden, all changes must go through a PR before merging. All tests must pass for a PR to be merged. Code is to be formatted with `black`. Built with poetry.
 
 ## submit
 
