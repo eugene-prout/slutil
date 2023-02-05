@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2023-02-04)
+### Fix
+* Fix click di ([`b655b99`](https://github.com/eugene-prout/slutil/commit/b655b99902070f0c8c91505f26d6d282eae4f579))
+
 ## v0.5.0 (2023-02-01)
 ### Feature
 * Add README to poetry toml section ([`3807798`](https://github.com/eugene-prout/slutil/commit/38077985703e106d63344f478aa397d748b29eea))

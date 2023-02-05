@@ -29,7 +29,7 @@ authors = [
 ]
 description = "Command-line utility to view slurm jobs"
 readme = "README.md"
-version = "0.5.0"
+version = "0.5.1"
 
 [tool.poetry.scripts]
 slutil = "slutil.main:start_cli"
