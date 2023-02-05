@@ -50,7 +50,7 @@ def test_status_job(fake_slurm):
 
         # CliRunner.invoke does not respect terminal size, (https://github.com/pallets/click/issues/1997) 
         # Accept truncated output here until fixed
-        job_details = ["329981","2023-02-04 13:3…","dddbffe","fake.sbatch","COMPLETED","test"]
+        job_details = ["329981","2023-02-04","dddbffe","fake.sbatch","COMPLETED","test"]
         print(result.output)
         for d in job_details:
             assert d in result.output
@@ -97,8 +97,8 @@ def test_report(fake_slurm):
         # CliRunner.invoke does not respect terminal size (https://github.com/pallets/click/issues/1997) 
         # Accept truncated output here until fixed
         job_details = [
-            ["329981","2023-02-04 13:…","dddbffe","fake.sbatch","COMPLETED","test"],
-            ["594334","2023-02-04 13:…","dddbffe","fake2.sbatch","COMPLETED", "test2"]
+            ["329981","2023-02-04","dddbffe","fake.sbatch","COMPLETED","test"],
+            ["594334","2023-02-04","dddbffe","fake2.sbatch","COMPLETED", "test2"]
         ]
         
         for j in job_details:
