@@ -1,8 +1,8 @@
 import subprocess
 from datetime import datetime
-from slutil.Record import Record
-from slutil.abstract_slurm_service import AbstractSlurmService
-from slutil.abstract_uow import AbstractUnitOfWork
+from slutil.model.Record import Record
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.services.abstract_uow import AbstractUnitOfWork
 from dataclasses import dataclass
 
 @dataclass

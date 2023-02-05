@@ -1,7 +1,7 @@
 from pathlib import Path
 import csv
-from slutil.abstract_repository import AbstractRepository
-from slutil.Record import Record
+from slutil.adapters.abstract_repository import AbstractRepository
+from slutil.model.Record import Record
 from datetime import datetime
 
 class CsvRepository(AbstractRepository):

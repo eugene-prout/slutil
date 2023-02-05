@@ -1,4 +1,4 @@
-from slutil.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 import subprocess
 import re
 

@@ -1,5 +1,5 @@
-from slutil.CsvRepository import CsvRepository
-from slutil.abstract_uow import AbstractUnitOfWork
+from slutil.adapters.csv_repository import CsvRepository
+from slutil.services.abstract_uow import AbstractUnitOfWork
 import csv
 
 

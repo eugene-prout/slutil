@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from functools import total_ordering
 from datetime import datetime
-from rich.text import Text
 
 @dataclass
 @total_ordering
