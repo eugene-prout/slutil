@@ -1,5 +1,7 @@
 # slutil
 
+*A modern slurm experience.*
+
 A command line utility to view Slurm jobs.
 
 
