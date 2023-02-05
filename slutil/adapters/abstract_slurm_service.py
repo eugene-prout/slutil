@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class AbstractSlurmService(ABC):
     @staticmethod
     @abstractmethod

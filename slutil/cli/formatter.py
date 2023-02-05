@@ -4,7 +4,9 @@ from rich import box
 from slutil.services.services import JobDTO
 
 
-def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, Text, Text, Text]:
+def jobDTO_to_rich_text(
+    job: JobDTO, verbose: bool
+) -> tuple[Text, Text, Text, Text, Text, Text]:
     status_color_map = {
         "COMPLETED": "green3",
         "COMPLETING": "chartreuse3",
@@ -14,7 +16,7 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
         "PREEMPTED": "red3",
         "RUNNING": "yellow3",
         "SUSPENDED": "orange3",
-        "STOPPED": "red3"
+        "STOPPED": "red3",
     }
 
     def ellipsis_text(text: str, style=""):
@@ -27,7 +29,7 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
             Text(job.description),
             Text(job.submitted_timestamp),
             Text(job.git_tag),
-            Text(job.sbatch)
+            Text(job.sbatch),
         )
     else:
         return (
@@ -36,11 +38,13 @@ def jobDTO_to_rich_text(job: JobDTO, verbose: bool) -> tuple[Text, Text, Text, T
             ellipsis_text(job.description),
             ellipsis_text(job.submitted_timestamp),
             ellipsis_text(job.git_tag),
-            ellipsis_text(job.sbatch)
+            ellipsis_text(job.sbatch),
         )
 
 
-def create_jobs_table(title: str, verbose: bool, jobs: list[JobDTO], caption=None) -> Table:
+def create_jobs_table(
+    title: str, verbose: bool, jobs: list[JobDTO], caption=None
+) -> Table:
     table = Table(title=title, caption=caption, box=box.ROUNDED, expand=True)
     table.add_column("ID")
     table.add_column("Status")
@@ -51,5 +55,5 @@ def create_jobs_table(title: str, verbose: bool, jobs: list[JobDTO], caption=Non
 
     for j in jobs:
         table.add_row(*jobDTO_to_rich_text(j, verbose))
-    
+
     return table

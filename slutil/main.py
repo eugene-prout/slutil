@@ -8,9 +8,10 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Dependencies():
+class Dependencies:
     uow: AbstractUnitOfWork
     slurm: AbstractSlurmService
+
 
 def build_dependencies(debug: bool) -> Dependencies:
     if debug:
@@ -22,6 +23,7 @@ def build_dependencies(debug: bool) -> Dependencies:
         slurm = SlurmService()
     return Dependencies(uow, slurm)
 
+
 def start_cli():
     dependencies = build_dependencies(debug=True)
     c = command_factory(dependencies.uow, dependencies.slurm)
@@ -31,5 +33,6 @@ def start_cli():
         console = Console()
         console.print(f"[red]Error: {str(e)}[/red]")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     start_cli()

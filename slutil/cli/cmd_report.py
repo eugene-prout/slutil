@@ -5,9 +5,10 @@ from slutil.services.services import report
 from slutil.cli.formatter import create_jobs_table
 
 
-def cmd_report(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, count: int, verbose: bool):
-    """Get status of multiple jobs
-    """
+def cmd_report(
+    uow: AbstractUnitOfWork, slurm: AbstractSlurmService, count: int, verbose: bool
+):
+    """Get status of multiple jobs"""
     jobs = report(slurm, uow, count)
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"
