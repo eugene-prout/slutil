@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.2 (2023-02-05)
+### Fix
+* Improve slogan ([`2ea4ca9`](https://github.com/eugene-prout/slutil/commit/2ea4ca9ba72604b43b9f2c835219cca3a24a7410))
+* Improve contributor guidelines ([`b005748`](https://github.com/eugene-prout/slutil/commit/b005748ff57ec0f3e392a46daa99bbc7806e470e))
+
 ## v0.5.1 (2023-02-04)
 ### Fix
 * Fix click di ([`b655b99`](https://github.com/eugene-prout/slutil/commit/b655b99902070f0c8c91505f26d6d282eae4f579))
