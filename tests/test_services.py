@@ -23,7 +23,6 @@ def test_get_job(in_memory_uow, fake_slurm):
     assert output == expected_output
     assert in_memory_uow.commited == True
     assert in_memory_uow.jobs._jobs == [job]
-    assert True == False
 
 
 def test_report_updates_job(in_memory_uow, fake_slurm):
