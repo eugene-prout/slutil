@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2023-02-06)
+### Feature
+* Improve error handling ([`2db89e9`](https://github.com/eugene-prout/slutil/commit/2db89e9e3323e391a389ed3eb13b3b68cc479fb5))
+
 ## v0.5.2 (2023-02-05)
 ### Fix
 * Improve slogan ([`2ea4ca9`](https://github.com/eugene-prout/slutil/commit/2ea4ca9ba72604b43b9f2c835219cca3a24a7410))
