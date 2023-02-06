@@ -2,7 +2,7 @@
 
 *A modern slurm experience.*
 
-A command line utility to view Slurm jobs.
+A command line utility to view Slurm jobs. Written with rich and click.
 
 
 ```
