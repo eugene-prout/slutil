@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2023-02-06)
+### Fix
+* Rearrange toml ([`3b68a0d`](https://github.com/eugene-prout/slutil/commit/3b68a0d3371404dc6e656f04b2831dafeb7ede7e))
+
 ## v0.6.0 (2023-02-06)
 ### Feature
 * Improve error handling ([`2db89e9`](https://github.com/eugene-prout/slutil/commit/2db89e9e3323e391a389ed3eb13b3b68cc479fb5))
