@@ -2,6 +2,7 @@ import subprocess
 from datetime import datetime
 from slutil.model.Record import Record
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from dataclasses import dataclass
 
@@ -60,11 +61,10 @@ def report(
 
 
 def submit(
-    slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, req: JobRequestDTO
+    slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, vcs: AbstractVCS, req: JobRequestDTO
 ) -> str:
     with uow:
-        # repo_stamp =  subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode()
-        repo_stamp = "abc123"
+        repo_stamp = vcs.get_current_commit()
         timestamp = datetime.now()
         slurm_id = slurm_service.submit_job(req.sbatch)
 

@@ -5,14 +5,14 @@ import re
 from datetime import datetime
 
 
-def test_submit_job(fake_slurm):
+def test_submit_job(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
 
         with open('test.sbatch', 'w') as f:
             f.write('srun ...')
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ['submit', 'test.sbatch', 'test description'])
         assert result.exit_code == 0
@@ -30,14 +30,14 @@ def test_submit_job(fake_slurm):
 
         assert re.match(file_contents_expected, file_contents)
 
-def test_status_job(fake_slurm):
+def test_status_job(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ['status', '329981'])
         assert result.exit_code == 0
@@ -55,14 +55,14 @@ def test_status_job(fake_slurm):
         for d in job_details:
             assert d in result.output
 
-def test_status_job_non_existant(fake_slurm):
+def test_status_job_non_existant(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ['status', '123456'])
         assert result.exit_code == 1
@@ -76,14 +76,14 @@ def test_status_job_non_existant(fake_slurm):
         assert isinstance(result.exception, KeyError)
         assert str(result.exception) == "'No job exists with specified id'"
 
-def test_report(fake_slurm):
+def test_report(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2\n"
         with open('.slutil_job_history.csv', 'w') as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ['report'])
         assert result.exit_code == 0
@@ -105,10 +105,10 @@ def test_report(fake_slurm):
             for d in j:
                 assert d in result.output
 
-def test_report_no_jobs(fake_slurm):
+def test_report_no_jobs(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm)
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ['report'])
         assert result.exit_code == 0
