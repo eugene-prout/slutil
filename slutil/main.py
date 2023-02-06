@@ -5,7 +5,7 @@ from slutil.adapters.slurm import SlurmService
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.cli.command_factory import command_factory
 from dataclasses import dataclass
-
+import os
 
 @dataclass
 class Dependencies:
@@ -16,8 +16,8 @@ class Dependencies:
 def build_dependencies(debug: bool) -> Dependencies:
     if debug:
         uow = CsvUnitOfWork("")
-        # from tests.conftest import FakeSlurm
-        slurm = SlurmService()
+        from tests.conftest import FakeSlurm
+        slurm = FakeSlurm()
     else:
         uow = CsvUnitOfWork("")
         slurm = SlurmService()
@@ -25,13 +25,17 @@ def build_dependencies(debug: bool) -> Dependencies:
 
 
 def start_cli():
-    dependencies = build_dependencies(debug=True)
+    debug = False
+    dependencies = build_dependencies(debug=debug)
     c = command_factory(dependencies.uow, dependencies.slurm)
     try:
         c()
     except Exception as e:
-        console = Console()
-        console.print(f"[red]Error: {str(e)}[/red]")
+        if debug:
+            raise e
+        else:
+            console = Console()
+            console.print(f"[red]Error: {str(e)}[/red]")
 
 
 if __name__ == "__main__":
