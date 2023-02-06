@@ -61,7 +61,10 @@ def report(
 
 
 def submit(
-    slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, vcs: AbstractVCS, req: JobRequestDTO
+    slurm_service: AbstractSlurmService,
+    uow: AbstractUnitOfWork,
+    vcs: AbstractVCS,
+    req: JobRequestDTO,
 ) -> str:
     with uow:
         repo_stamp = vcs.get_current_commit()

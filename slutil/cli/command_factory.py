@@ -8,8 +8,7 @@ from slutil.cli.cmd_report import cmd_report
 
 
 def command_factory(
-    uow: AbstractUnitOfWork, slurm: AbstractSlurmService,
-     vcs: AbstractVCS
+    uow: AbstractUnitOfWork, slurm: AbstractSlurmService, vcs: AbstractVCS
 ) -> click.Group:
     parent_cmd = click.Group()
 

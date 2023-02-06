@@ -9,6 +9,7 @@ from slutil.cli.command_factory import command_factory
 from dataclasses import dataclass
 import os
 
+
 @dataclass
 class Dependencies:
     uow: AbstractUnitOfWork
@@ -20,6 +21,7 @@ def build_dependencies(debug: bool) -> Dependencies:
     if debug:
         uow = CsvUnitOfWork("")
         from tests.conftest import FakeSlurm, FakeVCS
+
         slurm = FakeSlurm()
         vcs = FakeVCS()
     else:
