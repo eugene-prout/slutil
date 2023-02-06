@@ -1,9 +1,11 @@
 import pytest
 from slutil.model.Record import Record
 from slutil.adapters.abstract_repository import AbstractRepository
+from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.services.abstract_uow import AbstractUnitOfWork
-import random 
+import random
+
 
 class FakeRepository(AbstractRepository):
     def __init__(self):
@@ -20,6 +22,7 @@ class FakeRepository(AbstractRepository):
 
     def list(self) -> list[Record]:
         return list(self._jobs)
+
 
 class FakeUow(AbstractUnitOfWork):
     def __init__(self):
@@ -38,6 +41,7 @@ class FakeUow(AbstractUnitOfWork):
     def rollback(self):
         pass
 
+
 class FakeSlurm(AbstractSlurmService):
     @staticmethod
     def get_job_status(job_id: int):
@@ -51,14 +55,28 @@ class FakeSlurm(AbstractSlurmService):
     def test_slurm_accessible():
         return True
 
+
+class FakeVCS(AbstractVCS):
+    @staticmethod
+    def get_current_commit():
+        return "abc123"
+
+
 @pytest.fixture
 def in_memory_repository():
     return FakeRepository()
+
 
 @pytest.fixture
 def in_memory_uow():
     return FakeUow()
 
+
 @pytest.fixture
 def fake_slurm():
     return FakeSlurm()
+
+
+@pytest.fixture
+def fake_vcs():
+    return FakeVCS()

@@ -2,24 +2,18 @@ from slutil.model.Record import Record
 from slutil.services.services import JobDTO, get_job, report
 from datetime import datetime
 
+
 def test_get_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(
-        123456,
-        time,
-        "cae42f",
-        "test.sbatch",
-        "PENDING",
-        "testing get job"
-    )
+    job = Record(123456, time, "cae42f", "test.sbatch", "PENDING", "testing get job")
 
     expected_output = JobDTO(
         123456,
-        datetime.strftime(time, '%Y-%m-%d %H:%M:%S'),
+        datetime.strftime(time, "%Y-%m-%d %H:%M:%S"),
         "cae42f",
         "test.sbatch",
         "COMPLETED",
-        "testing get job"
+        "testing get job",
     )
 
     in_memory_uow.jobs.add(job)
@@ -30,25 +24,21 @@ def test_get_job(in_memory_uow, fake_slurm):
     assert in_memory_uow.commited == True
     assert in_memory_uow.jobs._jobs == [job]
 
+
 def test_report_updates_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(
-        123456,
-        time,
-        "cae42f",
-        "test.sbatch",
-        "PENDING",
-        "testing get job"
-    )
+    job = Record(123456, time, "cae42f", "test.sbatch", "PENDING", "testing get job")
 
-    expected_output = [JobDTO(
-        123456,
-        datetime.strftime(time, '%Y-%m-%d %H:%M:%S'),
-        "cae42f",
-        "test.sbatch",
-        "COMPLETED",
-        "testing get job"
-    )]
+    expected_output = [
+        JobDTO(
+            123456,
+            datetime.strftime(time, "%Y-%m-%d %H:%M:%S"),
+            "cae42f",
+            "test.sbatch",
+            "COMPLETED",
+            "testing get job",
+        )
+    ]
 
     in_memory_uow.jobs.add(job)
 

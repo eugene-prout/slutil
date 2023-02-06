@@ -1,5 +1,6 @@
 import click
 from slutil.services.abstract_uow import AbstractUnitOfWork
+from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.services.services import JobRequestDTO, submit
 
@@ -7,6 +8,7 @@ from slutil.services.services import JobRequestDTO, submit
 def cmd_submit(
     uow: AbstractUnitOfWork,
     slurm: AbstractSlurmService,
+    vcs: AbstractVCS,
     sbatch_file: str,
     description: str,
 ):
@@ -16,5 +18,5 @@ def cmd_submit(
 
     DESCRIPTION is a text field describing the job
     """
-    job_slurm_id = submit(slurm, uow, JobRequestDTO(sbatch_file, description))
+    job_slurm_id = submit(slurm, uow, vcs, JobRequestDTO(sbatch_file, description))
     click.echo(f"Successfully submitted job {job_slurm_id}")

@@ -1,5 +1,6 @@
 import click
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
@@ -7,7 +8,7 @@ from slutil.cli.cmd_report import cmd_report
 
 
 def command_factory(
-    uow: AbstractUnitOfWork, slurm: AbstractSlurmService
+    uow: AbstractUnitOfWork, slurm: AbstractSlurmService, vcs: AbstractVCS
 ) -> click.Group:
     parent_cmd = click.Group()
 
@@ -16,7 +17,7 @@ def command_factory(
             name="submit",
             context_settings=None,
             callback=lambda sbatch_file, description: cmd_submit(
-                uow, slurm, sbatch_file, description
+                uow, slurm, vcs, sbatch_file, description
             ),
             params=[
                 click.Argument(
