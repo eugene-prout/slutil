@@ -8,7 +8,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get(self, job_id: int) -> Record:
+    def get(self, job_id: int, allow_deleted=False) -> Record:
         raise NotImplementedError
 
     @abstractmethod

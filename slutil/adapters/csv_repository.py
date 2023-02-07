@@ -10,12 +10,16 @@ class CsvRepository(AbstractRepository):
         self._csv_path = Path(folder) / ".slutil_job_history.csv"
         f = open(self._csv_path, "a+")
         f.close()
-        self._jobs = []
+        self._jobs: list[Record] = []
         self._load()
 
-    def get(self, job_id: int) -> Record:
+    def get(self, job_id: int, allow_deleted=False) -> Record:
         try:
-            return next(x for x in self._jobs if x.slurm_id == job_id)
+            return next(
+                x
+                for x in self._jobs
+                if x.slurm_id == job_id and x.deleted == allow_deleted
+            )
         except StopIteration:
             raise KeyError("No job exists with specified id")
 

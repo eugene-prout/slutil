@@ -46,12 +46,24 @@ def get_job(
         return map_job_to_jobDTO(job)
 
 
+def get_deleted_job(
+    slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int
+) -> JobDTO:
+    with uow:
+        job = uow.jobs.get(slurm_id, allow_deleted=True)
+        end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
+        if job.status not in end_states:
+            job.status = slurm_service.get_job_status(job.slurm_id)
+        uow.commit()
+        return map_job_to_jobDTO(job)
+
+
 def report(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: int
 ) -> list[JobDTO]:
     with uow:
         all_jobs = uow.jobs.list()
-        output = sorted(all_jobs)[:count]
+        output = sorted([j for j in all_jobs if not j.deleted])[:count]
         end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
         for job in output:
             if job.status not in end_states:

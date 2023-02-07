@@ -12,6 +12,7 @@ class Record:
     sbatch: str
     status: str
     description: str
+    deleted: bool = False
 
     def __eq__(self, other):
         return self.slurm_id == other.slurm_id
