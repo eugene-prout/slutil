@@ -34,7 +34,7 @@ def test_status_job(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
+            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -69,7 +69,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test\n"
+            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -92,7 +92,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
 def test_report(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
-        original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2\n"
+        original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test,False\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2,False\n"
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
@@ -128,3 +128,75 @@ def test_report_no_jobs(fake_slurm, fake_vcs):
         assert result.exit_code == 0
 
         assert "(No jobs found)" in result.output
+
+
+def test_delete_job(fake_slurm, fake_vcs):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        original_file_contents = (
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+        )
+        with open(".slutil_job_history.csv", "w") as f:
+            f.write(original_file_contents)
+
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+
+        result = runner.invoke(cmd, ["delete", "400744"], input="y")
+        assert result.exit_code == 0
+
+        file_contents = ""
+        with open(".slutil_job_history.csv", "r") as f:
+            file_contents = f.read()
+
+        assert (
+            file_contents
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+        )
+
+
+def test_deleted_job_hidden(fake_slurm, fake_vcs):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        original_file_contents = (
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+        )
+        with open(".slutil_job_history.csv", "w") as f:
+            f.write(original_file_contents)
+
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+
+        result = runner.invoke(cmd, ["status", "400744"])
+        assert result.exit_code == 1
+        assert isinstance(result.exception, KeyError)
+        assert str(result.exception) == "'No job exists with specified id'"
+
+        file_contents = ""
+        with open(".slutil_job_history.csv", "r") as f:
+            file_contents = f.read()
+
+        assert file_contents == original_file_contents
+
+
+def test_restore_command(fake_slurm, fake_vcs):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        original_file_contents = (
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+        )
+        with open(".slutil_job_history.csv", "w") as f:
+            f.write(original_file_contents)
+
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+
+        result = runner.invoke(cmd, ["restore", "400744"], input="y")
+        assert result.exit_code == 0
+        assert "Job 400744 restored" in result.output
+
+        file_contents = ""
+        with open(".slutil_job_history.csv", "r") as f:
+            file_contents = f.read()
+
+        assert (
+            file_contents
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+        )

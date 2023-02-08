@@ -13,7 +13,13 @@ class FakeRepository(AbstractRepository):
 
     def get(self, job_id):
         try:
-            return next(x for x in self._jobs if x.slurm_id == job_id)
+            return next(x for x in self._jobs if x.slurm_id == job_id and not x.deleted)
+        except StopIteration:
+            raise KeyError("No job exists with specified id")
+
+    def get_deleted(self, job_id):
+        try:
+            return next(x for x in self._jobs if x.slurm_id == job_id and x.deleted)
         except StopIteration:
             raise KeyError("No job exists with specified id")
 
