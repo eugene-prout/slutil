@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2023-02-08)
+### Feature
+* Changes to structure (done to bump ci) ([`41447a9`](https://github.com/eugene-prout/slutil/commit/41447a9a3bf1dc60443393614eed0a3d4bd9d7d5))
+
 ## v0.7.0 (2023-02-08)
 ### Feature
 * Add edit command ([`24edb9e`](https://github.com/eugene-prout/slutil/commit/24edb9ec088597561cc18204a8a83b3df13e95bc))
