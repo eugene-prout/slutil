@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from click.testing import CliRunner
 from slutil.main import command_factory
 from slutil.services.csv_uow import CsvUnitOfWork
@@ -199,4 +200,31 @@ def test_restore_command(fake_slurm, fake_vcs):
         assert (
             file_contents
             == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+        )
+
+# Not a fan of the patch but this appears to be the best way to handle not opening the editor
+# https://github.com/pallets/click/issues/1720
+@patch("slutil.cli.cmd_edit.click.edit", lambda x: "new description")
+def test_edit_description(fake_slurm, fake_vcs):
+    runner = CliRunner()
+    with runner.isolated_filesystem():
+        original_file_contents = (
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+        )
+        with open(".slutil_job_history.csv", "w") as f:
+            f.write(original_file_contents)
+
+        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+
+        result = runner.invoke(cmd, ["edit", "400744"])
+        assert result.exit_code == 0
+        assert "Job description updated" in result.output
+
+        file_contents = ""
+        with open(".slutil_job_history.csv", "r") as f:
+            file_contents = f.read()
+
+        assert (
+            file_contents
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,new description,False\n"
         )
