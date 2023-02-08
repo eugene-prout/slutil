@@ -2,6 +2,7 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from slutil.services.services import JobDTO
+from typing import Optional
 
 
 def jobDTO_to_rich_text(
@@ -19,7 +20,7 @@ def jobDTO_to_rich_text(
         "STOPPED": "red3",
     }
 
-    def ellipsis_text(text: str, style=""):
+    def ellipsis_text(text: str, style: str = ""):
         return Text(text, overflow="ellipsis", no_wrap=True, style=style)
 
     if verbose:
@@ -43,7 +44,7 @@ def jobDTO_to_rich_text(
 
 
 def create_jobs_table(
-    title: str, verbose: bool, jobs: list[JobDTO], caption=None
+    title: str, verbose: bool, jobs: list[JobDTO], caption: Optional[str] = None
 ) -> Table:
     table = Table(title=title, caption=caption, box=box.ROUNDED, expand=True)
     table.add_column("ID")

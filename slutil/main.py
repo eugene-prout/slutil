@@ -7,7 +7,6 @@ from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.adapters.git import Git
 from slutil.cli.command_factory import command_factory
 from dataclasses import dataclass
-import os
 
 
 @dataclass
@@ -32,7 +31,7 @@ def build_dependencies(debug: bool) -> Dependencies:
 
 
 def start_cli():
-    debug = False
+    debug = True
     dependencies = build_dependencies(debug=debug)
     c = command_factory(dependencies.uow, dependencies.slurm, dependencies.vcs)
     try:
