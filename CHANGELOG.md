@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2023-02-08)
+### Feature
+* Add edit command ([`24edb9e`](https://github.com/eugene-prout/slutil/commit/24edb9ec088597561cc18204a8a83b3df13e95bc))
+
 ## v0.6.1 (2023-02-06)
 ### Fix
 * Rearrange toml ([`3b68a0d`](https://github.com/eugene-prout/slutil/commit/3b68a0d3371404dc6e656f04b2831dafeb7ede7e))

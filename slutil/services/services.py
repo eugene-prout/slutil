@@ -91,3 +91,10 @@ def submit(
         uow.commit()
 
         return str(slurm_id)
+
+def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: str):
+    with uow:
+        j = uow.jobs.get(slurm_id)
+        j.description = new_description
+        print(j.description)
+        uow.commit()
