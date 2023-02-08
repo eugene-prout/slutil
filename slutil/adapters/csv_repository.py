@@ -6,28 +6,30 @@ from datetime import datetime
 
 
 class CsvRepository(AbstractRepository):
-    def __init__(self, folder):
-        self._csv_path = Path(folder) / ".slutil_job_history.csv"
-        f = open(self._csv_path, "a+")
+    def __init__(self, folder: str):
+        self.csv_path = Path(folder) / ".slutil_job_history.csv"
+        f = open(self.csv_path, "a+")
         f.close()
         self._jobs: list[Record] = []
         self._load()
 
-    def get(self, job_id: int, allow_deleted=False) -> Record:
+    def get(self, job_id: int) -> Record:
         try:
-            return next(
-                x
-                for x in self._jobs
-                if x.slurm_id == job_id and x.deleted == allow_deleted
-            )
+            return next(x for x in self._jobs if x.slurm_id == job_id and not x.deleted)
         except StopIteration:
             raise KeyError("No job exists with specified id")
+
+    def get_deleted(self, job_id: int) -> Record:
+        try:
+            return next(x for x in self._jobs if x.slurm_id == job_id and x.deleted)
+        except StopIteration:
+            raise KeyError("No job has been deleted with the specified id")
 
     def add(self, job: Record):
         self._jobs.append(job)
 
     def _load(self):
-        with open(self._csv_path, mode="r") as csvfile:
+        with open(self.csv_path, mode="r") as csvfile:
             reader = csv.reader(csvfile)
             for line in reader:
                 formatted_line = [val.strip() for val in line]
@@ -38,6 +40,7 @@ class CsvRepository(AbstractRepository):
                     formatted_line[3],
                     formatted_line[4],
                     formatted_line[5],
+                    formatted_line[6] == "True",
                 )
                 self._jobs.append(record)
 

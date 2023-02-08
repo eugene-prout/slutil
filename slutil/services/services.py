@@ -1,4 +1,3 @@
-import subprocess
 from datetime import datetime
 from slutil.model.Record import Record
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
@@ -50,12 +49,26 @@ def get_deleted_job(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int
 ) -> JobDTO:
     with uow:
-        job = uow.jobs.get(slurm_id, allow_deleted=True)
+        job = uow.jobs.get(slurm_id)
         end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
         if job.status not in end_states:
             job.status = slurm_service.get_job_status(job.slurm_id)
         uow.commit()
         return map_job_to_jobDTO(job)
+
+
+def delete_job(uow: AbstractUnitOfWork, slurm_id: int):
+    with uow:
+        job = uow.jobs.get(slurm_id)
+        job.deleted = True
+        uow.commit()
+
+
+def undelete_job(uow: AbstractUnitOfWork, slurm_id: int):
+    with uow:
+        job = uow.jobs.get_deleted(slurm_id)
+        job.deleted = False
+        uow.commit()
 
 
 def report(

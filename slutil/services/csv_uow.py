@@ -6,11 +6,11 @@ import csv
 class CsvUnitOfWork(AbstractUnitOfWork):
     jobs: CsvRepository
 
-    def __init__(self, folder):
+    def __init__(self, folder: str):
         self.jobs = CsvRepository(folder)
 
     def _commit(self):
-        with self.jobs._csv_path.open("w", newline="") as f:
+        with self.jobs.csv_path.open("w", newline="") as f:
             writer = csv.writer(f)
             # writer.writerow(["slurm_id", "submit_time", "repo_commit_tag",
             # "sbatch_file", "status", "description"])
@@ -23,6 +23,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
                         job.sbatch,
                         job.status,
                         job.description,
+                        job.deleted,
                     ]
                 )
 
