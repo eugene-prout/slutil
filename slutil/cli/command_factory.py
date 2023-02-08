@@ -7,6 +7,8 @@ from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
 from slutil.cli.cmd_report import cmd_report
+from slutil.cli.cmd_edit import cmd_edit
+
 
 
 def command_factory(
@@ -75,6 +77,17 @@ def command_factory(
             name="restore",
             context_settings=None,
             callback=lambda slurm_id: cmd_undelete(uow, slurm, slurm_id),
+            params=[
+                click.Argument(["slurm_id"], type=int),
+            ],
+        )
+    )
+
+    parent_cmd.add_command(
+        click.Command(
+            name="edit",
+            context_settings=None,
+            callback=lambda slurm_id: cmd_edit(uow, slurm, slurm_id),
             params=[
                 click.Argument(["slurm_id"], type=int),
             ],
