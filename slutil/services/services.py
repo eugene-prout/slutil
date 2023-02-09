@@ -96,5 +96,5 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
     with uow:
         j = uow.jobs.get(slurm_id)
         j.description = new_description
-        print(j.description)
+        # print(j.description)
         uow.commit()

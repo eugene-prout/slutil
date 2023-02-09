@@ -61,7 +61,7 @@ def test_status_job(fake_slurm, fake_vcs):
             "COMPLETED",
             "test",
         ]
-        print(result.output)
+        # print(result.output)
         for d in job_details:
             assert d in result.output
 
