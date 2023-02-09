@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.1 (2023-02-09)
+### Fix
+* Remove debug options ([`d501a1c`](https://github.com/eugene-prout/slutil/commit/d501a1c7b1d3b74e718d8e010244d8fa7a90a9e0))
+
 ## v0.8.0 (2023-02-08)
 ### Feature
 * Changes to structure (done to bump ci) ([`41447a9`](https://github.com/eugene-prout/slutil/commit/41447a9a3bf1dc60443393614eed0a3d4bd9d7d5))
