@@ -148,7 +148,7 @@ def test_delete_job(fake_slurm, fake_vcs):
         file_contents = ""
         with open(".slutil_job_history.csv", "r") as f:
             file_contents = f.read()
-
+            
         assert (
             file_contents
             == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"

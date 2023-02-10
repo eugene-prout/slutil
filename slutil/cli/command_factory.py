@@ -2,6 +2,7 @@ import click
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.cli.cmd_delete import cmd_delete
+from slutil.cli.cmd_search import cmd_search
 from slutil.cli.cmd_undelete import cmd_undelete
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
@@ -90,6 +91,20 @@ def command_factory(
             callback=lambda slurm_id: cmd_edit(uow, slurm, slurm_id),
             params=[
                 click.Argument(["slurm_id"], type=int),
+            ],
+        )
+    )
+
+    parent_cmd.add_command(
+        click.Command(
+            name="filter",
+            context_settings=None,
+            callback=lambda description, verbose: cmd_search(
+                uow, slurm, description, verbose
+            ),
+            params=[
+                click.Argument(["description"], type=str),
+                click.Option(["-v", "--verbose"], is_flag=True, default=False),
             ],
         )
     )

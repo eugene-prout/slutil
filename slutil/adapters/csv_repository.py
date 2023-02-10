@@ -45,4 +45,7 @@ class CsvRepository(AbstractRepository):
                 self._jobs.append(record)
 
     def list(self) -> list[Record]:
-        return list(self._jobs)
+        return [j for j in self._jobs if not j.deleted]
+
+    def list_all(self):
+        return [j for j in self._jobs]

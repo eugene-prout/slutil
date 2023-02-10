@@ -96,5 +96,16 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
     with uow:
         j = uow.jobs.get(slurm_id)
         j.description = new_description
-        # print(j.description)
         uow.commit()
+
+def search_description(uow: AbstractUnitOfWork, slurm_service: AbstractSlurmService, query: str) -> list[JobDTO]:
+    with uow:
+        matching_jobs = [j for j in uow.jobs.list() if query.lower() in j.description.lower()]
+        
+        end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
+        for job in matching_jobs:
+            if job.status not in end_states:
+                job.status = slurm_service.get_job_status(job.slurm_id)
+        uow.commit()
+
+        return [map_job_to_jobDTO(j) for j in matching_jobs]

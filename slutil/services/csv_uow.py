@@ -14,7 +14,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
             writer = csv.writer(f)
             # writer.writerow(["slurm_id", "submit_time", "repo_commit_tag",
             # "sbatch_file", "status", "description"])
-            for job in self.jobs.list():
+            for job in self.jobs.list_all():
                 writer.writerow(
                     [
                         job.slurm_id,

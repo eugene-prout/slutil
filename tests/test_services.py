@@ -1,5 +1,5 @@
 from slutil.model.Record import Record
-from slutil.services.services import JobDTO, get_job, report
+from slutil.services.services import JobDTO, get_job, report, search_description
 from datetime import datetime
 
 
@@ -47,3 +47,22 @@ def test_report_updates_job(in_memory_uow, fake_slurm):
     assert output == expected_output
     assert in_memory_uow.commited == True
     assert in_memory_uow.jobs._jobs == [job]
+
+def test_search_description_no_match(in_memory_uow, fake_slurm):
+    output = search_description(in_memory_uow, fake_slurm, "testing")
+    
+    assert output == []
+
+def test_search_description_some_match(in_memory_uow, fake_slurm):
+    time = datetime.now()
+    job1 = Record(123456, time, "cae42f", "test.sbatch", "PENDING", "testing, description")
+    job2 = Record(123457, time, "cae42f", "test.sbatch", "PENDING", "script")
+    job3 = Record(123458, time, "cae42f", "test.sbatch", "PENDING", "test")
+    
+    in_memory_uow.jobs.add(job1)
+    in_memory_uow.jobs.add(job2)
+    in_memory_uow.jobs.add(job3)
+
+    output = search_description(in_memory_uow, fake_slurm, "script")
+
+    assert output == [job1, job2]
