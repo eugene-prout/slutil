@@ -18,7 +18,17 @@ def cmd_filter(
     sbatch: Optional[str],
     verbose: bool,
 ):
-    """ """
+    """
+    Display all jobs matching the specified regexes.
+
+    \b
+    NOTE:
+    At least one filter must be set
+    When filters are set to plaintext the filter acts as a fuzzy search
+    For a strict text search, use anchors: ^phrase to search strictly for$
+    When writing regex make sure your shell parses them correctly, e.g. | (or) is often interpreted as a pipe. Make sure to escape or quote such characters
+    For best results, wrap each regex string with double quotes
+    """
     fields = (job_id, status, description, timestamp, commit, sbatch)
     if not any(fields):
         raise ValueError("Please supply at least 1 filter")

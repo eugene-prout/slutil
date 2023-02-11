@@ -13,7 +13,7 @@ def cmd_delete(
 
     SLURM_ID is the id of the job to delete.
 
-    Note: can be reversed with `slutil restore <slurm id>`
+    Note: can be reversed with "slutil restore <slurm id>"
     """
     job_details = get_job(slurm, uow, slurm_id)
     table = create_jobs_table(f"Job {slurm_id}", verbose, [job_details])
