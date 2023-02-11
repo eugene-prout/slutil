@@ -28,7 +28,7 @@ class FakeRepository(AbstractRepository):
 
     def list(self) -> list[Record]:
         return [j for j in self._jobs if not j.deleted]
-    
+
     def list_all(self):
         return list(self._jobs)
 

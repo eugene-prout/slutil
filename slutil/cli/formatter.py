@@ -2,7 +2,7 @@ from rich.table import Table
 from rich.text import Text
 from rich import box
 from slutil.services.services import JobDTO
-from typing import Optional
+from typing import Optional, Iterable
 
 
 def jobDTO_to_rich_text(
@@ -44,7 +44,7 @@ def jobDTO_to_rich_text(
 
 
 def create_jobs_table(
-    title: str, verbose: bool, jobs: list[JobDTO], caption: Optional[str] = None
+    title: str, verbose: bool, jobs: Iterable[JobDTO], caption: Optional[str] = None
 ) -> Table:
     table = Table(title=title, caption=caption, box=box.ROUNDED, expand=True)
     table.add_column("ID")
@@ -54,7 +54,7 @@ def create_jobs_table(
     table.add_column("Commit")
     table.add_column("sbatch File")
 
-    for j in jobs:
+    for j in sorted(jobs, reverse=True):
         table.add_row(*jobDTO_to_rich_text(j, verbose))
 
     return table

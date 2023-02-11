@@ -2,14 +2,13 @@ import click
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.cli.cmd_delete import cmd_delete
-from slutil.cli.cmd_search import cmd_search
+from slutil.cli.cmd_filter import cmd_filter
 from slutil.cli.cmd_undelete import cmd_undelete
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
 from slutil.cli.cmd_report import cmd_report
 from slutil.cli.cmd_edit import cmd_edit
-
 
 
 def command_factory(
@@ -99,11 +98,24 @@ def command_factory(
         click.Command(
             name="filter",
             context_settings=None,
-            callback=lambda description, verbose: cmd_search(
-                uow, slurm, description, verbose
+            callback=lambda job_id, status, description, submit_time, commit, sbatch, verbose: cmd_filter(
+                uow,
+                slurm,
+                job_id,
+                status,
+                description,
+                submit_time,
+                commit,
+                sbatch,
+                verbose,
             ),
             params=[
-                click.Argument(["description"], type=str),
+                click.Option(["-j", "--job-id"], type=str, default=None),
+                click.Option(["-s", "--status"], type=str, default=None),
+                click.Option(["-d", "--description"], type=str, default=None),
+                click.Option(["-t", "--submit-time"], type=str, default=None),
+                click.Option(["-c", "--commit"], type=str, default=None),
+                click.Option(["-sb", "--sbatch"], type=str, default=None),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
             ],
         )
