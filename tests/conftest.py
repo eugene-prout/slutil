@@ -9,7 +9,7 @@ import random
 
 class FakeRepository(AbstractRepository):
     def __init__(self):
-        self._jobs = []
+        self._jobs: list[Record] = []
 
     def get(self, job_id):
         try:
@@ -27,6 +27,9 @@ class FakeRepository(AbstractRepository):
         self._jobs.append(job)
 
     def list(self) -> list[Record]:
+        return [j for j in self._jobs if not j.deleted]
+
+    def list_all(self):
         return list(self._jobs)
 
 

@@ -202,6 +202,7 @@ def test_restore_command(fake_slurm, fake_vcs):
             == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
         )
 
+
 # Not a fan of the patch but this appears to be the best way to handle not opening the editor
 # https://github.com/pallets/click/issues/1720
 @patch("slutil.cli.cmd_edit.click.edit", lambda x: "new description")

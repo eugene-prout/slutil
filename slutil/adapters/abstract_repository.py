@@ -18,3 +18,7 @@ class AbstractRepository(ABC):
     @abstractmethod
     def list(self) -> list[Record]:
         raise NotImplementedError
+
+    @abstractmethod
+    def list_all(self):
+        raise NotImplementedError

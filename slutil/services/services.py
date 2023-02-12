@@ -1,12 +1,16 @@
 from datetime import datetime
+from typing import Optional, Iterable
 from slutil.model.Record import Record
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from dataclasses import dataclass
+import re
+from functools import total_ordering
 
 
-@dataclass
+@dataclass(frozen=True)
+@total_ordering
 class JobDTO:
     slurm_id: int
     submitted_timestamp: str
@@ -14,6 +18,9 @@ class JobDTO:
     sbatch: str
     status: str
     description: str
+
+    def __gt__(self, other):
+        return self.slurm_id > other.slurm_id
 
 
 @dataclass
@@ -92,9 +99,75 @@ def submit(
 
         return str(slurm_id)
 
+
 def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: str):
     with uow:
         j = uow.jobs.get(slurm_id)
         j.description = new_description
-        # print(j.description)
         uow.commit()
+
+
+def get_latest_job_states_nocommit(
+    jobs: Iterable[Record], slurm_service: AbstractSlurmService
+):
+    end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
+    for job in jobs:
+        if job.status not in end_states:
+            job.status = slurm_service.get_job_status(job.slurm_id)
+    return jobs
+
+
+@dataclass
+class FilterQuery:
+    id_filter: Optional[re.Pattern] = None
+    status_filter: Optional[re.Pattern] = None
+    description_filter: Optional[re.Pattern] = None
+    timestamp_filter: Optional[re.Pattern] = None
+    commit_filter: Optional[re.Pattern] = None
+    sbatch_filter: Optional[re.Pattern] = None
+
+
+def filter_jobs(
+    uow: AbstractUnitOfWork, slurm: AbstractSlurmService, query: FilterQuery
+) -> list[JobDTO]:
+    with uow:
+        matching_jobs = set(get_latest_job_states_nocommit(uow.jobs.list(), slurm))
+
+        if query.id_filter:
+            matching_jobs = {
+                j for j in matching_jobs if re.search(query.id_filter, str(j.slurm_id))
+            }
+
+        if query.description_filter:
+            matching_jobs = {
+                j
+                for j in matching_jobs
+                if re.search(query.description_filter, str(j.description))
+            }
+
+        if query.commit_filter:
+            matching_jobs = {
+                j for j in matching_jobs if re.search(query.commit_filter, j.git_tag)
+            }
+
+        if query.sbatch_filter:
+            matching_jobs = {
+                j for j in matching_jobs if re.search(query.sbatch_filter, j.sbatch)
+            }
+
+        if query.timestamp_filter:
+            matching_jobs = {
+                j
+                for j in matching_jobs
+                if re.search(
+                    query.timestamp_filter,
+                    datetime.strftime(j.submitted_timestamp, "%Y-%m-%d %H:%M:%S"),
+                )
+            }
+
+        if query.status_filter:
+            matching_jobs = {
+                j for j in matching_jobs if re.search(query.status_filter, j.status)
+            }
+
+    return [map_job_to_jobDTO(j) for j in matching_jobs]
