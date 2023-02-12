@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2023-02-12)
+### Feature
+* Add filter command ([`40df8ba`](https://github.com/eugene-prout/slutil/commit/40df8ba98064c108b091ff13a088d408f6fe6316))
+* Add filter command ([`8be0f35`](https://github.com/eugene-prout/slutil/commit/8be0f3537115586644cce4ed8283e26b26ad2cd5))
+
+### Documentation
+* Improve filter command documentation ([`9a09c20`](https://github.com/eugene-prout/slutil/commit/9a09c2072dc31115310d198efa0f73c5bb7230fa))
+
 ## v0.8.1 (2023-02-09)
 ### Fix
 * Remove debug options ([`d501a1c`](https://github.com/eugene-prout/slutil/commit/d501a1c7b1d3b74e718d8e010244d8fa7a90a9e0))
