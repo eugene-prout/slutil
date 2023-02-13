@@ -9,6 +9,8 @@ from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
 from slutil.cli.cmd_report import cmd_report
 from slutil.cli.cmd_edit import cmd_edit
+import re
+from typing import Optional
 
 
 def command_factory(
@@ -16,18 +18,35 @@ def command_factory(
 ) -> click.Group:
     parent_cmd = click.Group()
 
+    def validate_dependency_str(ctx, param, value) -> tuple[Optional[str], list[int]]:
+        if value:
+            if re.match(
+                r"^(((after|afterany|afternotok|afterok)(:([\d])*)+)|singleton)$", value
+            ):
+                dep_type, *numbers = value.split(":")
+                return (dep_type, numbers)
+            raise click.BadParameter("not a supported dependency option")
+        return (None, [])
+
     parent_cmd.add_command(
         click.Command(
             name="submit",
             context_settings=None,
-            callback=lambda sbatch_file, description: cmd_submit(
-                uow, slurm, vcs, sbatch_file, description
+            callback=lambda sbatch_file, description, dependency: cmd_submit(
+                uow, slurm, vcs, sbatch_file, description, dependency
             ),
             params=[
                 click.Argument(
                     ["sbatch_file"], required=True, type=click.Path(exists=True)
                 ),
                 click.Argument(["description"], required=True, type=str),
+                click.Option(
+                    ["-dp", "--dependency"],
+                    required=False,
+                    type=str,
+                    callback=validate_dependency_str,
+                    help="The job's dependencies. In the form ('<type>(:[dependent_id])+' type:=after|afterany|afternotok|afterok) or 'singleton' e.g. 'afterok:123456:345678'"
+                ),
             ],
             help=cmd_submit.__doc__,
         )

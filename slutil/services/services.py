@@ -27,6 +27,8 @@ class JobDTO:
 class JobRequestDTO:
     sbatch: str
     description: str
+    dependency_type: Optional[str]
+    dependency_list: list[int]
 
 
 def map_job_to_jobDTO(job: Record) -> JobDTO:
@@ -89,7 +91,7 @@ def submit(
     with uow:
         repo_stamp = vcs.get_current_commit()
         timestamp = datetime.now()
-        slurm_id = slurm_service.submit_job(req.sbatch)
+        slurm_id = slurm_service.submit_job(req.sbatch, req.dependency_type, req.dependency_list)
 
         new_job = Record(
             slurm_id, timestamp, repo_stamp, req.sbatch, "PENDING", req.description

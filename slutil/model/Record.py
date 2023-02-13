@@ -1,6 +1,21 @@
 from dataclasses import dataclass
 from functools import total_ordering
 from datetime import datetime
+from typing import Optional
+from enum import Enum
+
+
+class DependencyType(Enum):
+    after = 1
+    afterany = 2
+    afternotok = 3
+    afterok = 4
+
+
+@dataclass
+class Dependencies:
+    type: DependencyType
+    ids: list[int]
 
 
 @dataclass
@@ -13,6 +28,7 @@ class Record:
     status: str
     description: str
     deleted: bool = False
+    dependencies: Optional[Dependencies] = None
 
     def __hash__(self):
         return hash((self.slurm_id, self.submitted_timestamp))
