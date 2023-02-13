@@ -11,7 +11,7 @@ class SlurmService(AbstractSlurmService):
 
         regex_pattern = rf"({job_id})(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)"
         output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
-        regex_match = re.match(regex_pattern, output)
+        regex_match = re.search(regex_pattern, output)
         if regex_match:
             return regex_match.group(8).strip()
         raise OSError("sacct command has unexpected output")
