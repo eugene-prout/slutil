@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2023-02-15)
+### Feature
+* Add dependency support ([`1ceba7d`](https://github.com/eugene-prout/slutil/commit/1ceba7d00b690b14d461f0dbb2fd1fc2f1fd5bb4))
+
+### Fix
+* Package for release ([`1a99bbf`](https://github.com/eugene-prout/slutil/commit/1a99bbf2dbae03bcef4ae3c6a84242e4a47e7581))
+* Improve dependency reporting ([`9b92038`](https://github.com/eugene-prout/slutil/commit/9b9203816c73d81edadbf7f8427098f5d28368ac))
+* Use regex search ([`c045da0`](https://github.com/eugene-prout/slutil/commit/c045da045f6ef89bbf8342ac94eba61a6b3a6c7b))
+
 ## v0.9.0 (2023-02-12)
 ### Feature
 * Add filter command ([`40df8ba`](https://github.com/eugene-prout/slutil/commit/40df8ba98064c108b091ff13a088d408f6fe6316))
