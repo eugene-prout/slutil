@@ -57,7 +57,7 @@ class FakeSlurm(AbstractSlurmService):
         return "COMPLETED"
 
     @staticmethod
-    def submit_job(sbatch: str) -> int:
+    def submit_job(sbatch: str, dependency, depenency_list) -> int:
         return random.randrange(100000, 999999)
 
     @staticmethod

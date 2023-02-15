@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from typing import Optional
 
 class AbstractSlurmService(ABC):
     @staticmethod
@@ -9,7 +9,7 @@ class AbstractSlurmService(ABC):
 
     @staticmethod
     @abstractmethod
-    def submit_job(sbatch: str) -> int:
+    def submit_job(sbatch: str, dependency_type: Optional[str], dependency_list: list[int]) -> int:
         raise NotImplementedError
 
     @staticmethod

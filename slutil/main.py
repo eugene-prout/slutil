@@ -19,7 +19,7 @@ class Dependencies:
 def build_dependencies(debug: bool) -> Dependencies:
     # if debug:
     #     uow = CsvUnitOfWork("")
-    #     from tests.conftest import FakeSlurm, FakeVCS
+    # from tests.conftest import FakeSlurm, FakeVCS
 
     #     slurm = FakeSlurm()
     #     vcs = FakeVCS()
@@ -34,6 +34,7 @@ def start_cli():
     debug = True
     dependencies = build_dependencies(debug=debug)
     c = command_factory(dependencies.uow, dependencies.slurm, dependencies.vcs)
+    
     try:
         c()
     except Exception as e:

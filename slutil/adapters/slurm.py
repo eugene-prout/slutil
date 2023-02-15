@@ -1,7 +1,7 @@
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 import subprocess
 import re
-
+from typing import Optional
 
 class SlurmService(AbstractSlurmService):
     @staticmethod
@@ -9,20 +9,27 @@ class SlurmService(AbstractSlurmService):
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
-        regex_pattern = r"^(\s*JobID\s*JobName\s*Partition\s*Account\s*AllocCPUS\s*State\s*ExitCode\s*)(-*\s*){7}(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*){7}$"
+        regex_pattern = rf"({job_id})\s+([\w\.]*)\s*(\w*)\s*(\w*)\s*(\d*)\s*([\w\+]*)\s*([\w:]*)"
         output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
-        regex_match = re.match(regex_pattern, output)
+        regex_match = re.search(regex_pattern, output)
         if regex_match:
-            return regex_match.group(8).strip()
+            return regex_match.group(6).strip()
         raise OSError("sacct command has unexpected output")
 
     @staticmethod
-    def submit_job(sbatch: str) -> int:
+    def submit_job(sbatch: str, dependency_type: Optional[str], dependency_list: list[int]) -> int:
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
+        command =  f"sbatch {sbatch}"
+        if dependency_type:
+            if dependency_type == "singleton":
+                command += f" --dependency={dependency_type}"
+            else:
+                command += f" --dependency={dependency_type}:{':'.join(map(str, dependency_list))}"
+        
         proc = subprocess.run(
-            f"sbatch {sbatch}", check=True, capture_output=True, shell=True
+           command, check=True, capture_output=True, shell=True
         )
         # proc.stdout should be "Submitted batch job XXXXXX"
         regex_match = re.match(

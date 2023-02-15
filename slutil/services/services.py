@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, Iterable
-from slutil.model.Record import Record
+from slutil.model.Record import Record, Dependencies, DependencyType
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
@@ -18,6 +18,9 @@ class JobDTO:
     sbatch: str
     status: str
     description: str
+    dependency_type: str
+    dependency_state: str
+    dependency_ids: list[int]|list[str]
 
     def __gt__(self, other):
         return self.slurm_id > other.slurm_id
@@ -27,27 +30,79 @@ class JobDTO:
 class JobRequestDTO:
     sbatch: str
     description: str
+    dependency_type: Optional[str]
+    dependency_list: list[int]
 
 
 def map_job_to_jobDTO(job: Record) -> JobDTO:
     return JobDTO(
         job.slurm_id,
-        datetime.strftime(job.submitted_timestamp, "%Y-%m-%d %H:%M:%S"),
+        datetime.strftime(job.submitted_timestamp, "%y-%m-%d %H:%M:%S"),
         job.git_tag,
         job.sbatch,
         job.status,
         job.description,
+        job.dependencies.type.name if job.dependencies else "NONE",
+        job.dependencies.state if job.dependencies else "NONE",
+        job.dependencies.ids if job.dependencies else ["NONE"],
     )
-
 
 def get_job(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int
 ) -> JobDTO:
     with uow:
         job = uow.jobs.get(slurm_id)
-        end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
-        if job.status not in end_states:
-            job.status = slurm_service.get_job_status(job.slurm_id)
+        get_latest_job_states_nocommit([job], slurm_service)
+        dependency_state = "NONE"
+        dependency_state_mapping = {
+            DependencyType.after: {
+                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED+", "PREEMPTED", "RUNNING", "SUSPENDED", "STOPPED"],
+                "failed": [],
+                "runnning": [],
+                "pending": ["PENDING"]
+            },
+            DependencyType.afterok: {
+                "completed": ["COMPLETED"],
+                "failed": ["FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "running": ["RUNNING", "COMPLETING"],
+                "pending": ["PENDING"]
+            },
+            DependencyType.afterany: {
+                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "failed": [],
+                "running": ["RUNNING"],
+                "pending": ["PENDING"]
+            },
+            DependencyType.afternotok: {
+                "completed": ["FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "failed": ["COMPLETED"],
+                "running": ["RUNNING", "COMPLETING"],
+                "pending": ["PENDING"]
+            }
+        }
+        if job.dependencies:
+            if job.dependencies.type == DependencyType.singleton:
+                if job.status != "RUNNING":
+                    dependency_state = "RUNNING"
+                else:
+                    dependency_state = "COMPLETED"
+            else:
+                try:
+                    dependencies_job = [get_job(slurm_service, uow, j) for j in job.dependencies.ids]
+                    dependencies_state = [j.status for j in dependencies_job]
+                    state_map = dependency_state_mapping[job.dependencies.type]
+                    if any(s in state_map["failed"] for s in dependencies_state):
+                        dependency_state = "FAILED"
+                    elif all(s in state_map["completed"] for s in dependencies_state):
+                        dependency_state = "COMPLETED"
+                    elif any(s in state_map["running"] for s in dependencies_state):
+                        dependency_state = "RUNNING"
+                    elif all(s in state_map["pending"] for s in dependencies_state):
+                        dependency_state = "PENDING"
+                except KeyError:
+                    dependency_state = "UNKNOWN"
+            job.dependencies.state = dependency_state
+
         uow.commit()
         return map_job_to_jobDTO(job)
 
@@ -71,13 +126,10 @@ def report(
 ) -> list[JobDTO]:
     with uow:
         all_jobs = uow.jobs.list()
-        output = sorted([j for j in all_jobs if not j.deleted])[:count]
-        end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
-        for job in output:
-            if job.status not in end_states:
-                job.status = slurm_service.get_job_status(job.slurm_id)
+        numbers = [j.slurm_id for j in sorted([j for j in all_jobs if not j.deleted])[:count]]
+        output = [get_job(slurm_service, uow, i) for i in numbers]
         uow.commit()
-        return [map_job_to_jobDTO(j) for j in output]
+        return output
 
 
 def submit(
@@ -89,10 +141,13 @@ def submit(
     with uow:
         repo_stamp = vcs.get_current_commit()
         timestamp = datetime.now()
-        slurm_id = slurm_service.submit_job(req.sbatch)
-
+        slurm_id = slurm_service.submit_job(req.sbatch, req.dependency_type, req.dependency_list)
+        if req.dependency_type:
+            dependencies = Dependencies(DependencyType[req.dependency_type], "PENDING", req.dependency_list)
+        else:
+            dependencies = None
         new_job = Record(
-            slurm_id, timestamp, repo_stamp, req.sbatch, "PENDING", req.description
+            slurm_id, timestamp, repo_stamp, req.sbatch, "PENDING", req.description, dependencies
         )
         uow.jobs.add(new_job)
         uow.commit()

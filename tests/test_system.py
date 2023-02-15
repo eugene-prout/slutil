@@ -35,7 +35,7 @@ def test_status_job(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,False\n"
+            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,none,none,[],False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -53,12 +53,13 @@ def test_status_job(fake_slurm, fake_vcs):
 
         # CliRunner.invoke does not respect terminal size, (https://github.com/pallets/click/issues/1997)
         # Accept truncated output here until fixed
+        print(result.output)
         job_details = [
             "329981",
-            "2023-02-04",
-            "dddbffe",
-            "fake.sbatch",
-            "COMPLETED",
+            "23-02",
+            "dddb",
+            "fake",
+            "COMP",
             "test",
         ]
         # print(result.output)
@@ -70,7 +71,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,False\n"
+            "329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,none,none,[],False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -93,7 +94,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
 def test_report(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
-        original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test,False\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2,False\n"
+        original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test,none,none,[],False\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2,none,none,[],False\n"
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
@@ -111,8 +112,8 @@ def test_report(fake_slurm, fake_vcs):
         # CliRunner.invoke does not respect terminal size (https://github.com/pallets/click/issues/1997)
         # Accept truncated output here until fixed
         job_details = [
-            ["329981", "2023-02-04", "dddbffe", "fake.sbatch", "COMPLETED", "test"],
-            ["594334", "2023-02-04", "dddbffe", "fake2.sbatch", "COMPLETED", "test2"],
+            ["329981", "23-02-04", "dddbffe", "fake", "COMPLETED", "test", ],
+            ["594334", "23-02-04", "dddbffe", "fake2", "COMPLETED", "test2"],
         ]
 
         for j in job_details:
@@ -135,7 +136,7 @@ def test_delete_job(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -151,7 +152,7 @@ def test_delete_job(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],True\n"
         )
 
 
@@ -159,7 +160,7 @@ def test_deleted_job_hidden(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],True\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -182,7 +183,7 @@ def test_restore_command(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,True\n"
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],True\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -199,7 +200,7 @@ def test_restore_command(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],False\n"
         )
 
 
@@ -210,7 +211,7 @@ def test_edit_description(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = (
-            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,False\n"
+            "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,none,none,[],False\n"
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
@@ -227,5 +228,5 @@ def test_edit_description(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,new description,False\n"
+            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,new description,none,none,[],False\n"
         )

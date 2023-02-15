@@ -1,7 +1,23 @@
 from dataclasses import dataclass
 from functools import total_ordering
 from datetime import datetime
+from typing import Optional
+from enum import Enum
 
+
+class DependencyType(Enum):
+    after = 1
+    afterany = 2
+    afternotok = 3
+    afterok = 4
+    singleton = 5
+
+
+@dataclass
+class Dependencies:
+    type: DependencyType
+    state: str
+    ids: list[int]
 
 @dataclass
 @total_ordering
@@ -12,6 +28,7 @@ class Record:
     sbatch: str
     status: str
     description: str
+    dependencies: Optional[Dependencies] = None
     deleted: bool = False
 
     def __hash__(self):
