@@ -19,13 +19,13 @@ class Dependencies:
 def build_dependencies(debug: bool) -> Dependencies:
     # if debug:
     #     uow = CsvUnitOfWork("")
-    from tests.conftest import FakeSlurm, FakeVCS
+    # from tests.conftest import FakeSlurm, FakeVCS
 
     #     slurm = FakeSlurm()
     #     vcs = FakeVCS()
     # else:
     uow = CsvUnitOfWork("")
-    slurm = FakeSlurm()
+    slurm = SlurmService()
     vcs = Git()
     return Dependencies(uow, slurm, vcs)
 
