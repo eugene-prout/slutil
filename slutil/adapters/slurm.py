@@ -9,11 +9,11 @@ class SlurmService(AbstractSlurmService):
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
-        regex_pattern = rf"({job_id})(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)(\S*\s*)"
+        regex_pattern = rf"({job_id})\s+([\w\.]*)\s*(\w*)\s*(\w*)\s*(\d*)\s*([\w\+]*)\s*([\w:]*)"
         output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
         regex_match = re.search(regex_pattern, output)
         if regex_match:
-            return regex_match.group(8).strip()
+            return regex_match.group(6).strip()
         raise OSError("sacct command has unexpected output")
 
     @staticmethod

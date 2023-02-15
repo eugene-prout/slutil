@@ -10,13 +10,14 @@ class DependencyType(Enum):
     afterany = 2
     afternotok = 3
     afterok = 4
+    singleton = 5
 
 
 @dataclass
 class Dependencies:
     type: DependencyType
+    state: str
     ids: list[int]
-
 
 @dataclass
 @total_ordering
@@ -27,8 +28,8 @@ class Record:
     sbatch: str
     status: str
     description: str
-    deleted: bool = False
     dependencies: Optional[Dependencies] = None
+    deleted: bool = False
 
     def __hash__(self):
         return hash((self.slurm_id, self.submitted_timestamp))

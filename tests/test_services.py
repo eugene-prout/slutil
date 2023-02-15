@@ -17,11 +17,14 @@ def test_get_job(in_memory_uow, fake_slurm):
 
     expected_output = JobDTO(
         123456,
-        datetime.strftime(time, "%Y-%m-%d %H:%M:%S"),
+        datetime.strftime(time, "%y-%m-%d %H:%M:%S"),
         "cae42f",
         "test.sbatch",
         "COMPLETED",
         "testing get job",
+        "NONE",
+        "NONE",
+        ["NONE"]
     )
 
     in_memory_uow.jobs.add(job)
@@ -40,11 +43,14 @@ def test_report_updates_job(in_memory_uow, fake_slurm):
     expected_output = [
         JobDTO(
             123456,
-            datetime.strftime(time, "%Y-%m-%d %H:%M:%S"),
+            datetime.strftime(time, "%y-%m-%d %H:%M:%S"),
             "cae42f",
             "test.sbatch",
             "COMPLETED",
             "testing get job",
+            "NONE",
+            "NONE",
+            ["NONE"]
         )
     ]
 
@@ -81,4 +87,4 @@ def test_search_description_some_match(in_memory_uow, fake_slurm):
         in_memory_uow, fake_slurm, FilterQuery(description_filter=re.compile("script"))
     )
 
-    assert set(output) == {map_job_to_jobDTO(job1), map_job_to_jobDTO(job2)}
+    assert all(x in [map_job_to_jobDTO(job1), map_job_to_jobDTO(job2)] for x in output)

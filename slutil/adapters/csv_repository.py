@@ -1,7 +1,8 @@
 from pathlib import Path
 import csv
+import ast
 from slutil.adapters.abstract_repository import AbstractRepository
-from slutil.model.Record import Record
+from slutil.model.Record import Record, Dependencies, DependencyType
 from datetime import datetime
 
 
@@ -33,6 +34,11 @@ class CsvRepository(AbstractRepository):
             reader = csv.reader(csvfile)
             for line in reader:
                 formatted_line = [val.strip() for val in line]
+                
+                dependency = None
+                if formatted_line[6] != "none":
+                    dependency = Dependencies(DependencyType[formatted_line[6]], formatted_line[7], [int(i) for i in ast.literal_eval(formatted_line[8])])
+                
                 record = Record(
                     int(formatted_line[0]),
                     datetime.strptime(formatted_line[1], "%Y-%m-%d %H:%M:%S"),
@@ -40,7 +46,8 @@ class CsvRepository(AbstractRepository):
                     formatted_line[3],
                     formatted_line[4],
                     formatted_line[5],
-                    formatted_line[6] == "True",
+                    dependency,
+                    formatted_line[9] == "True",
                 )
                 self._jobs.append(record)
 
