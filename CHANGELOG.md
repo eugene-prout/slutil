@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2023-02-20)
+### Fix
+* Support older versions of python ([`71aa0d9`](https://github.com/eugene-prout/slutil/commit/71aa0d9c8bdba4d54bd258fd6683f061796f0c5e))
+
 ## v0.10.1 (2023-02-20)
 ### Fix
 * Sort report jobs in the right order ([`9b35114`](https://github.com/eugene-prout/slutil/commit/9b35114ee403917d4ef93d26dfb04ccb1abba334))
