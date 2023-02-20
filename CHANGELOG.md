@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2023-02-20)
+### Fix
+* Sort report jobs in the right order ([`9b35114`](https://github.com/eugene-prout/slutil/commit/9b35114ee403917d4ef93d26dfb04ccb1abba334))
+
 ## v0.10.0 (2023-02-15)
 ### Feature
 * Add dependency support ([`1ceba7d`](https://github.com/eugene-prout/slutil/commit/1ceba7d00b690b14d461f0dbb2fd1fc2f1fd5bb4))
