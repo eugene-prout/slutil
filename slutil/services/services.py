@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Union
 from slutil.model.Record import Record, Dependencies, DependencyType
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
@@ -7,7 +7,6 @@ from slutil.services.abstract_uow import AbstractUnitOfWork
 from dataclasses import dataclass
 import re
 from functools import total_ordering
-
 
 @dataclass(frozen=True)
 @total_ordering
@@ -20,7 +19,7 @@ class JobDTO:
     description: str
     dependency_type: str
     dependency_state: str
-    dependency_ids: list[int]|list[str]
+    dependency_ids: Union[list[int],list[str]]
 
     def __gt__(self, other):
         return self.slurm_id > other.slurm_id
