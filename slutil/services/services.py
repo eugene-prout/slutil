@@ -126,7 +126,7 @@ def report(
 ) -> list[JobDTO]:
     with uow:
         all_jobs = uow.jobs.list()
-        numbers = [j.slurm_id for j in sorted([j for j in all_jobs if not j.deleted])[:count]]
+        numbers = [j.slurm_id for j in sorted([j for j in all_jobs if not j.deleted], reverse=True)[:count]]
         output = [get_job(slurm_service, uow, i) for i in numbers]
         uow.commit()
         return output
