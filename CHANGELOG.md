@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.3 (2023-02-22)
+### Fix
+* Improve slurm get command regex ([`c0daa0d`](https://github.com/eugene-prout/slutil/commit/c0daa0d5bfc234969b9a2010c17e145edb39c070))
+
 ## v0.10.2 (2023-02-20)
 ### Fix
 * Support older versions of python ([`71aa0d9`](https://github.com/eugene-prout/slutil/commit/71aa0d9c8bdba4d54bd258fd6683f061796f0c5e))
