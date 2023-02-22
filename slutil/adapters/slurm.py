@@ -9,12 +9,12 @@ class SlurmService(AbstractSlurmService):
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
-        regex_pattern = rf"({job_id})\s+([\w\.]*)\s*(\w*)\s*(\w*)\s*(\d*)\s*([\w\+]*)\s*([\w:]*)"
-        output = subprocess.check_output(["sacct", "-j", str(job_id)]).strip().decode()
-        regex_match = re.search(regex_pattern, output)
+        regex_pattern = rf"^(JobID\|State\|\n)({job_id})\|(PENDING|RUNNING|SUSPENDED|COMPLETED|CANCELLED|FAILED|TIMEOUT|NODE_FAIL|PREEMPTED|BOOT_FAIL|DEADLINE|OUT_OF_MEMORY)\|$"
+        output = subprocess.check_output(["sacct", "-j", str(job_id), " -o", "JOBID,State", "--parsable", "-X"]).strip().decode()
+        regex_match = re.fullmatch(regex_pattern, output)
         if regex_match:
-            return regex_match.group(6).strip()
-        raise OSError("sacct command has unexpected output")
+            return regex_match.group(3).strip()
+        raise OSError(f"sacct command has unexpected output \nexpected:\n{regex_match}\ngot:\n{output}")
 
     @staticmethod
     def submit_job(sbatch: str, dependency_type: Optional[str], dependency_list: list[int]) -> int:
