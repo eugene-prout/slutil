@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.5 (2023-02-23)
+### Fix
+* Version bump test ([`7e2c3ac`](https://github.com/eugene-prout/slutil/commit/7e2c3ac8cd0249c53b193d0e01ba19b7b59210fd))
+
 ## v0.10.4 (2023-02-23)
 ### Fix
 * Remove cancalled+ ([`699ab6d`](https://github.com/eugene-prout/slutil/commit/699ab6d5a54960c26146ae4a4b832924ec7c82a7))
