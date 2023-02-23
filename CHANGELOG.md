@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.4 (2023-02-23)
+### Fix
+* Remove cancalled+ ([`699ab6d`](https://github.com/eugene-prout/slutil/commit/699ab6d5a54960c26146ae4a4b832924ec7c82a7))
+* Relax regex ([`29d9456`](https://github.com/eugene-prout/slutil/commit/29d94563dfe5454e6e87535ff56de0619a713561))
+
 ## v0.10.3 (2023-02-22)
 ### Fix
 * Improve slurm get command regex ([`c0daa0d`](https://github.com/eugene-prout/slutil/commit/c0daa0d5bfc234969b9a2010c17e145edb39c070))
