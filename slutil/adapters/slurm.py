@@ -9,11 +9,14 @@ class SlurmService(AbstractSlurmService):
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
-        regex_pattern = rf"^(JobID\|State\|\n)({job_id})\|(PENDING|RUNNING|SUSPENDED|COMPLETED|CANCELLED|FAILED|TIMEOUT|NODE_FAIL|PREEMPTED|BOOT_FAIL|DEADLINE|OUT_OF_MEMORY)\|$"
-        output = subprocess.check_output(["sacct", "-j", str(job_id), " -o", "JOBID,State", "--parsable", "-X"]).strip().decode()
+        regex_pattern = rf"^(JobID\|State\|\n)({job_id})\|(PENDING|RUNNING|SUSPENDED|COMPLETED|CANCELLED by \d*|FAILED|TIMEOUT|NODE_FAIL|PREEMPTED|BOOT_FAIL|DEADLINE|OUT_OF_MEMORY)\|$"
+        output = subprocess.check_output(["sacct", "-j", str(job_id), "-o", "JOBID,State", "--parsable", "-X"]).strip().decode()
         regex_match = re.fullmatch(regex_pattern, output)
         if regex_match:
-            return regex_match.group(3).strip()
+            status = regex_match.group(3).strip()
+            if "CANCELLED by" in status:
+                status = status[:9]
+            return status
         raise OSError(f"sacct command has unexpected output \nexpected:\n{regex_match}\ngot:\n{output}")
 
     @staticmethod

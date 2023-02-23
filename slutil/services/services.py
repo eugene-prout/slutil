@@ -55,25 +55,25 @@ def get_job(
         dependency_state = "NONE"
         dependency_state_mapping = {
             DependencyType.after: {
-                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED+", "PREEMPTED", "RUNNING", "SUSPENDED", "STOPPED"],
+                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED", "PREEMPTED", "RUNNING", "SUSPENDED", "STOPPED"],
                 "failed": [],
                 "runnning": [],
                 "pending": ["PENDING"]
             },
             DependencyType.afterok: {
                 "completed": ["COMPLETED"],
-                "failed": ["FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "failed": ["FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
                 "running": ["RUNNING", "COMPLETING"],
                 "pending": ["PENDING"]
             },
             DependencyType.afterany: {
-                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
                 "failed": [],
                 "running": ["RUNNING"],
                 "pending": ["PENDING"]
             },
             DependencyType.afternotok: {
-                "completed": ["FAILED", "CANCELLED+", "PREEMPTED", "SUSPENDED", "STOPPED"],
+                "completed": ["FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
                 "failed": ["COMPLETED"],
                 "running": ["RUNNING", "COMPLETING"],
                 "pending": ["PENDING"]
