@@ -1,4 +1,4 @@
-from slutil.model.Record import Record
+from slutil.model.Record import Record, JobStatus
 from slutil.services.services import (
     JobDTO,
     get_job,
@@ -13,7 +13,7 @@ import re
 
 def test_get_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(123456, time, "cae42f", "test.sbatch", "PENDING", "testing get job")
+    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus["PENDING"], "testing get job")
 
     expected_output = JobDTO(
         123456,
@@ -38,7 +38,7 @@ def test_get_job(in_memory_uow, fake_slurm):
 
 def test_report_updates_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(123456, time, "cae42f", "test.sbatch", "PENDING", "testing get job")
+    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing get job")
 
     expected_output = [
         JobDTO(
@@ -74,10 +74,10 @@ def test_search_description_no_match(in_memory_uow, fake_slurm):
 def test_search_description_some_match(in_memory_uow, fake_slurm):
     time = datetime.now()
     job1 = Record(
-        123456, time, "cae42f", "test.sbatch", "PENDING", "testing, description"
+        123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing, description"
     )
-    job2 = Record(123457, time, "cae42f", "test.sbatch", "PENDING", "script")
-    job3 = Record(123458, time, "cae42f", "test.sbatch", "PENDING", "test")
+    job2 = Record(123457, time, "cae42f", "test.sbatch", JobStatus.PENDING, "script")
+    job3 = Record(123458, time, "cae42f", "test.sbatch", JobStatus.PENDING, "test")
 
     in_memory_uow.jobs.add(job1)
     in_memory_uow.jobs.add(job2)

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, Iterable, Union
-from slutil.model.Record import Record, Dependencies, DependencyType
+from slutil.model.Record import DependencyState, Record, Dependencies, DependencyType, JobStatus, aggregate_depedencies
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
@@ -39,68 +39,27 @@ def map_job_to_jobDTO(job: Record) -> JobDTO:
         datetime.strftime(job.submitted_timestamp, "%y-%m-%d %H:%M:%S"),
         job.git_tag,
         job.sbatch,
-        job.status,
+        job.status.name,
         job.description,
         job.dependencies.type.name if job.dependencies else "NONE",
-        job.dependencies.state if job.dependencies else "NONE",
-        job.dependencies.ids if job.dependencies else ["NONE"],
+        job.dependencies.state.name if job.dependencies else "NONE",
+        [str(j) for j in job.dependencies.ids] if job.dependencies else ["NONE"],
     )
+
+def update_dependencies(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, job: Record):
+    if job.dependencies is not None:
+        try:
+            dependent_jobs = update_job_states_nc([uow.jobs.get(j) for j in job.dependencies.ids], slurm_service, uow)
+            job.dependencies.state = aggregate_depedencies(job, dependent_jobs)
+        except KeyError:
+            job.dependencies.state = DependencyState.UNKNOWN
 
 def get_job(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int
 ) -> JobDTO:
     with uow:
         job = uow.jobs.get(slurm_id)
-        get_latest_job_states_nocommit([job], slurm_service)
-        dependency_state = "NONE"
-        dependency_state_mapping = {
-            DependencyType.after: {
-                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED", "PREEMPTED", "RUNNING", "SUSPENDED", "STOPPED"],
-                "failed": [],
-                "runnning": [],
-                "pending": ["PENDING"]
-            },
-            DependencyType.afterok: {
-                "completed": ["COMPLETED"],
-                "failed": ["FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
-                "running": ["RUNNING", "COMPLETING"],
-                "pending": ["PENDING"]
-            },
-            DependencyType.afterany: {
-                "completed": ["COMPLETED", "COMPLETING", "FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
-                "failed": [],
-                "running": ["RUNNING"],
-                "pending": ["PENDING"]
-            },
-            DependencyType.afternotok: {
-                "completed": ["FAILED", "CANCELLED", "PREEMPTED", "SUSPENDED", "STOPPED"],
-                "failed": ["COMPLETED"],
-                "running": ["RUNNING", "COMPLETING"],
-                "pending": ["PENDING"]
-            }
-        }
-        if job.dependencies:
-            if job.dependencies.type == DependencyType.singleton:
-                if job.status != "RUNNING":
-                    dependency_state = "RUNNING"
-                else:
-                    dependency_state = "COMPLETED"
-            else:
-                try:
-                    dependencies_job = [get_job(slurm_service, uow, j) for j in job.dependencies.ids]
-                    dependencies_state = [j.status for j in dependencies_job]
-                    state_map = dependency_state_mapping[job.dependencies.type]
-                    if any(s in state_map["failed"] for s in dependencies_state):
-                        dependency_state = "FAILED"
-                    elif all(s in state_map["completed"] for s in dependencies_state):
-                        dependency_state = "COMPLETED"
-                    elif any(s in state_map["running"] for s in dependencies_state):
-                        dependency_state = "RUNNING"
-                    elif all(s in state_map["pending"] for s in dependencies_state):
-                        dependency_state = "PENDING"
-                except KeyError:
-                    dependency_state = "UNKNOWN"
-            job.dependencies.state = dependency_state
+        update_job_states_nc([job], slurm_service, uow)
 
         uow.commit()
         return map_job_to_jobDTO(job)
@@ -142,11 +101,11 @@ def submit(
         timestamp = datetime.now()
         slurm_id = slurm_service.submit_job(req.sbatch, req.dependency_type, req.dependency_list)
         if req.dependency_type:
-            dependencies = Dependencies(DependencyType[req.dependency_type], "PENDING", req.dependency_list)
+            dependencies = Dependencies(DependencyType[req.dependency_type], DependencyState.PENDING, req.dependency_list)
         else:
             dependencies = None
         new_job = Record(
-            slurm_id, timestamp, repo_stamp, req.sbatch, "PENDING", req.description, dependencies
+            slurm_id, timestamp, repo_stamp, req.sbatch, JobStatus.PENDING, req.description, dependencies
         )
         uow.jobs.add(new_job)
         uow.commit()
@@ -161,13 +120,13 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
         uow.commit()
 
 
-def get_latest_job_states_nocommit(
-    jobs: Iterable[Record], slurm_service: AbstractSlurmService
+def update_job_states_nc(
+    jobs: Iterable[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
 ):
-    end_states = ["COMPLETED", "FAILED", "PREEMPTED"]
-    for job in jobs:
-        if job.status not in end_states:
-            job.status = slurm_service.get_job_status(job.slurm_id)
+    for j in filter(lambda j: j.in_progress, jobs):
+        j.status = JobStatus[slurm_service.get_job_status(j.slurm_id)]
+        update_dependencies(slurm_service, uow, j)
+
     return jobs
 
 
@@ -185,7 +144,7 @@ def filter_jobs(
     uow: AbstractUnitOfWork, slurm: AbstractSlurmService, query: FilterQuery
 ) -> list[JobDTO]:
     with uow:
-        matching_jobs = set(get_latest_job_states_nocommit(uow.jobs.list(), slurm))
+        matching_jobs = set(update_job_states_nc(uow.jobs.list(), slurm, uow))
 
         if query.id_filter:
             matching_jobs = {
@@ -221,7 +180,7 @@ def filter_jobs(
 
         if query.status_filter:
             matching_jobs = {
-                j for j in matching_jobs if re.search(query.status_filter, j.status)
+                j for j in matching_jobs if re.search(query.status_filter, j.status.name)
             }
 
     return [map_job_to_jobDTO(j) for j in matching_jobs]

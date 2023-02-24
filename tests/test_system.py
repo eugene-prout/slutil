@@ -53,7 +53,6 @@ def test_status_job(fake_slurm, fake_vcs):
 
         # CliRunner.invoke does not respect terminal size, (https://github.com/pallets/click/issues/1997)
         # Accept truncated output here until fixed
-        print(result.output)
         job_details = [
             "329981",
             "23-02",
@@ -62,7 +61,6 @@ def test_status_job(fake_slurm, fake_vcs):
             "COMP",
             "test",
         ]
-        # print(result.output)
         for d in job_details:
             assert d in result.output
 
