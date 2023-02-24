@@ -24,7 +24,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
                         job.submitted_timestamp.strftime("%Y-%m-%d %H:%M:%S"),
                         job.git_tag,
                         job.sbatch,
-                        job.status,
+                        job.status.name,
                         job.description,
                         dependency_name,
                         dependency_state,

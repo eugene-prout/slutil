@@ -2,7 +2,7 @@ from pathlib import Path
 import csv
 import ast
 from slutil.adapters.abstract_repository import AbstractRepository
-from slutil.model.Record import Record, Dependencies, DependencyType
+from slutil.model.Record import Record, Dependencies, DependencyType, JobStatus
 from datetime import datetime
 
 
@@ -44,7 +44,7 @@ class CsvRepository(AbstractRepository):
                     datetime.strptime(formatted_line[1], "%Y-%m-%d %H:%M:%S"),
                     formatted_line[2],
                     formatted_line[3],
-                    formatted_line[4],
+                    JobStatus[formatted_line[4]],
                     formatted_line[5],
                     dependency,
                     formatted_line[9] == "True",
