@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.6 (2023-02-24)
+### Fix
+* Allow pending jobs time to display in sacct ([`329fc49`](https://github.com/eugene-prout/slutil/commit/329fc498cabe929a8bf9262ac79a699683b6dd28))
+
 ## v0.10.5 (2023-02-23)
 ### Fix
 * Version bump test ([`7e2c3ac`](https://github.com/eugene-prout/slutil/commit/7e2c3ac8cd0249c53b193d0e01ba19b7b59210fd))
