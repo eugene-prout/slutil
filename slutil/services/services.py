@@ -124,7 +124,11 @@ def update_job_states_nc(
     jobs: Iterable[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
 ):
     for j in filter(lambda j: j.in_progress, jobs):
-        j.status = JobStatus[slurm_service.get_job_status(j.slurm_id)]
+        time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
+        allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
+        new_status = JobStatus[slurm_service.get_job_status(j.slurm_id, allow_none)]
+        if new_status:
+            j.status = new_status
         update_dependencies(slurm_service, uow, j)
 
     return jobs

@@ -5,7 +5,7 @@ from typing import Optional
 
 class SlurmService(AbstractSlurmService):
     @staticmethod
-    def get_job_status(job_id: int):
+    def get_job_status(job_id: int, allow_none: bool):
         if not SlurmService.test_slurm_accessible():
             raise OSError("Slurm accessed required but cannot access Slurm")
 
@@ -17,6 +17,8 @@ class SlurmService(AbstractSlurmService):
             if "CANCELLED by" in status:
                 status = status[:9]
             return status
+        if allow_none:
+            return None
         raise OSError(f"sacct command has unexpected output \nexpected:\n{regex_match}\ngot:\n{output}")
 
     @staticmethod
