@@ -53,7 +53,7 @@ class FakeUow(AbstractUnitOfWork):
 
 class FakeSlurm(AbstractSlurmService):
     @staticmethod
-    def get_job_status(job_id: int):
+    def get_job_status(job_id: int, allow_none: bool):
         return "COMPLETED"
 
     @staticmethod
