@@ -51,7 +51,7 @@ class SlurmService(AbstractSlurmService):
 
         logging.debug("submitting slurm job")
 
-        command = f"sbatch {sbatch}"
+        command = f"sbatch"
         if dependency_type:
             dependency = ""
             if dependency_type == "singleton":
@@ -60,7 +60,7 @@ class SlurmService(AbstractSlurmService):
                 dependency = f" --dependency={dependency_type}:{':'.join(map(str, dependency_list))}"
             logging.debug("adding dependency section: %s", dependency)
             command += dependency
-
+        command += f" {sbatch}"
         logging.debug("running command: %s", command)
         proc = subprocess.run(command, check=True, capture_output=True, shell=True)
         logging.debug("command returned: %s", proc.stdout.decode("utf-8"))
