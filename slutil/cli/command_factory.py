@@ -56,10 +56,11 @@ def command_factory(
         click.Command(
             name="report",
             context_settings=None,
-            callback=lambda count, verbose: cmd_report(uow, slurm, count, verbose),
+            callback=lambda count, live, verbose: cmd_report(uow, slurm, count, live, verbose),
             params=[
                 click.Option(["-c", "--count"], default=10),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
+                click.Option(["-l", "--live"], help="infinitely refresh the display with new data", is_flag=True, default=False),
             ],
             help=cmd_report.__doc__,
         )
