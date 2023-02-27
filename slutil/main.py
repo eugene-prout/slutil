@@ -7,6 +7,7 @@ from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.adapters.git import Git
 from slutil.cli.command_factory import command_factory
 from dataclasses import dataclass
+import logging
 
 
 @dataclass
@@ -25,9 +26,22 @@ def build_dependencies(debug: bool) -> Dependencies:
 
 def start_cli():
     debug = True
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[logging.FileHandler("debug.log", "w")],
+    )
+
     dependencies = build_dependencies(debug=debug)
+    logging.debug(
+        "starting cli with %s, %s, %s",
+        dependencies.uow,
+        dependencies.slurm,
+        dependencies.vcs,
+    )
     c = command_factory(dependencies.uow, dependencies.slurm, dependencies.vcs)
-    
+
     try:
         c()
     except Exception as e:
