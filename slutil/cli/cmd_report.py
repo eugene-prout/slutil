@@ -3,12 +3,14 @@ from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.services.services import report
 from slutil.cli.formatter import create_jobs_table
-
+import logging
 
 def cmd_report(
     uow: AbstractUnitOfWork, slurm: AbstractSlurmService, count: int, verbose: bool
 ):
     """Get status of multiple jobs"""
+    logging.debug("cli: report requested, count: %d, verbose: %s", count, verbose)
+
     jobs = report(slurm, uow, count)
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"

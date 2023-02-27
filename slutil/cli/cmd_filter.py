@@ -5,7 +5,7 @@ from slutil.cli.formatter import create_jobs_table
 from rich.console import Console
 import re
 from typing import Optional
-
+import logging
 
 def cmd_filter(
     uow: AbstractUnitOfWork,
@@ -29,6 +29,8 @@ def cmd_filter(
     When writing regex make sure your shell parses them correctly, e.g. | (or) is often interpreted as a pipe. Make sure to escape or quote such characters
     For best results, wrap each regex string with double quotes
     """
+    logging.debug("cli: filter requested fields: %s", (job_id, status, description, timestamp, commit, sbatch))
+
     fields = (job_id, status, description, timestamp, commit, sbatch)
     if not any(fields):
         raise ValueError("Please supply at least 1 filter")

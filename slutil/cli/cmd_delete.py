@@ -4,7 +4,7 @@ from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.cli.formatter import create_jobs_table
 from slutil.services.services import get_job, delete_job
 import click
-
+import logging
 
 def cmd_delete(
     uow: AbstractUnitOfWork, slurm: AbstractSlurmService, slurm_id: int, verbose: bool
@@ -15,10 +15,16 @@ def cmd_delete(
 
     Note: can be reversed with "slutil restore <slurm id>"
     """
+    logging.debug("cli: delete job %d requested", slurm_id)
+
     job_details = get_job(slurm, uow, slurm_id)
+    
     table = create_jobs_table(f"Job {slurm_id}", verbose, [job_details])
     console = Console()
     console.print(table, overflow="ellipsis")
+
     click.confirm("Do you want to delete the above job? ", abort=True)
+    logging.debug("cli: delete job %d confirmed", slurm_id)
+
     delete_job(uow, slurm_id)
     click.echo(f"Job {slurm_id} deleted")
