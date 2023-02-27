@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2023-02-27)
+### Fix
+* Rearrange submit command ([`9d6af0f`](https://github.com/eugene-prout/slutil/commit/9d6af0fbdb22493d0a0327d4c1be6e910f47a479))
+
 ## v0.11.0 (2023-02-27)
 ### Feature
 * Add live view to report ([`6e13add`](https://github.com/eugene-prout/slutil/commit/6e13add1226ed08bbdb0c3cff2a3d2d3e8bd2973))
