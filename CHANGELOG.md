@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.8 (2023-02-27)
+### Fix
+* Add logging to cli layer ([`99bdace`](https://github.com/eugene-prout/slutil/commit/99bdace740117a18b7fdd9e42a6eaf100c1ec567))
+
 ## v0.10.7 (2023-02-27)
 ### Fix
 * Add logging to commands ([`c04cde6`](https://github.com/eugene-prout/slutil/commit/c04cde6f605b9ede64d32587e910d842dbd465ff))
