@@ -3,7 +3,7 @@ from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.cli.formatter import create_job_table_detailed
 from slutil.services.services import get_job
-
+import logging
 
 def cmd_status(
     uow: AbstractUnitOfWork, slurm: AbstractSlurmService, slurm_id: int, verbose: bool
@@ -12,6 +12,7 @@ def cmd_status(
 
     SLURM_ID is the id of the job to check.
     """
+    logging.debug("cli: status requested job id: %d", slurm_id)
     job_status = get_job(slurm, uow, slurm_id)
     table = create_job_table_detailed(f"Job {slurm_id}", verbose, [job_status])
 
