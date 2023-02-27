@@ -9,14 +9,19 @@ def jobDTO_to_rich_text(
     job: JobDTO, verbose: bool
 ) -> tuple[Text, Text, Text, Text, Text, Text, Text]:
     status_color_map = {
-        "COMPLETED": "green3",
-        "COMPLETING": "chartreuse3",
-        "FAILED": "red3",
-        "CANCELLED": "grey54",
         "PENDING": "blue3",
-        "PREEMPTED": "red3",
         "RUNNING": "yellow3",
         "SUSPENDED": "orange3",
+        "COMPLETED": "green3",
+        "CANCELLED": "grey54",
+        "FAILED": "red3",
+        "TIMEOUT": "red3",
+        "NODE_FAIL": "red3",
+        "PREEMPTED": "red3",
+        "BOOT_FAIL": "red3",
+        "DEADLINE": "red3",
+        "OUT_OF_MEMORY": "red3",
+        "COMPLETING": "chartreuse3",
         "STOPPED": "red3",
         "UNKNOWN": "grey54",
         "NONE": "grey54"
