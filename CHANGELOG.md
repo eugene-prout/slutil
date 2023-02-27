@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.9 (2023-02-27)
+### Fix
+* Add out of memory to formatter ([`7d5a4e4`](https://github.com/eugene-prout/slutil/commit/7d5a4e4b78e463764cae5787a13031fdbcd014cd))
+
 ## v0.10.8 (2023-02-27)
 ### Fix
 * Add logging to cli layer ([`99bdace`](https://github.com/eugene-prout/slutil/commit/99bdace740117a18b7fdd9e42a6eaf100c1ec567))
