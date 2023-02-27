@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2023-02-27)
+### Feature
+* Add live view to report ([`6e13add`](https://github.com/eugene-prout/slutil/commit/6e13add1226ed08bbdb0c3cff2a3d2d3e8bd2973))
+
 ## v0.10.9 (2023-02-27)
 ### Fix
 * Add out of memory to formatter ([`7d5a4e4`](https://github.com/eugene-prout/slutil/commit/7d5a4e4b78e463764cae5787a13031fdbcd014cd))
