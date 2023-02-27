@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.7 (2023-02-27)
+### Fix
+* Add logging to commands ([`c04cde6`](https://github.com/eugene-prout/slutil/commit/c04cde6f605b9ede64d32587e910d842dbd465ff))
+
 ## v0.10.6 (2023-02-24)
 ### Fix
 * Allow pending jobs time to display in sacct ([`329fc49`](https://github.com/eugene-prout/slutil/commit/329fc498cabe929a8bf9262ac79a699683b6dd28))
