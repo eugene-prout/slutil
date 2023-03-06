@@ -12,8 +12,6 @@ class CsvUnitOfWork(AbstractUnitOfWork):
     def _commit(self):
         with self.jobs.csv_path.open("w", newline="") as f:
             writer = csv.writer(f)
-            # writer.writerow(["slurm_id", "submit_time", "repo_commit_tag",
-            # "sbatch_file", "status", "description"])
             for job in self.jobs.list_all():
                 dependency_name = job.dependencies.type.name if job.dependencies else "none"
                 dependency_state = job.dependencies.state if job.dependencies else "none"
