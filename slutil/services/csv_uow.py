@@ -16,7 +16,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
             # "sbatch_file", "status", "description"])
             for job in self.jobs.list_all():
                 dependency_name = job.dependencies.type.name if job.dependencies else "none"
-                dependency_state = job.dependencies.state if job.dependencies else "none"
+                dependency_state = job.dependencies.state.name if job.dependencies else "none"
                 dependency_ids = job.dependencies.ids if job.dependencies else []
                 writer.writerow(
                     [
