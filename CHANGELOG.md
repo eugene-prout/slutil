@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.2 (2023-03-06)
+### Fix
+* Fix bug with dependency ([`862dc31`](https://github.com/eugene-prout/slutil/commit/862dc3189d88b61bb3b1ef3a829e48afe4e17f82))
+
 ## v0.11.1 (2023-02-27)
 ### Fix
 * Rearrange submit command ([`9d6af0f`](https://github.com/eugene-prout/slutil/commit/9d6af0fbdb22493d0a0327d4c1be6e910f47a479))
