@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.3 (2023-03-06)
+### Fix
+* Load depedency state as enum ([`4b09f84`](https://github.com/eugene-prout/slutil/commit/4b09f8409fe9e729ead19c40c599a0776bebfb14))
+
 ## v0.11.2 (2023-03-06)
 ### Fix
 * Fix bug with dependency ([`862dc31`](https://github.com/eugene-prout/slutil/commit/862dc3189d88b61bb3b1ef3a829e48afe4e17f82))
