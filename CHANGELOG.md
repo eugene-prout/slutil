@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.5 (2023-03-07)
+### Fix
+* Make csv write atomic ([`cbd5643`](https://github.com/eugene-prout/slutil/commit/cbd5643bcc3c48c8678429120b3a6ddb9bf8cc73))
+
 ## v0.11.4 (2023-03-07)
 ### Fix
 * Add validation to csv load ([`23d6946`](https://github.com/eugene-prout/slutil/commit/23d694601d99dfaeaf34c1889cd4d49ccde905df))
