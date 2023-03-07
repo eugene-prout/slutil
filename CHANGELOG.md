@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.4 (2023-03-07)
+### Fix
+* Add validation to csv load ([`23d6946`](https://github.com/eugene-prout/slutil/commit/23d694601d99dfaeaf34c1889cd4d49ccde905df))
+
 ## v0.11.3 (2023-03-06)
 ### Fix
 * Load depedency state as enum ([`4b09f84`](https://github.com/eugene-prout/slutil/commit/4b09f8409fe9e729ead19c40c599a0776bebfb14))
