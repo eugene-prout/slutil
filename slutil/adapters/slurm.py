@@ -1,4 +1,4 @@
-from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmError
 import subprocess
 import re
 from typing import Optional
@@ -17,9 +17,14 @@ class SlurmService(AbstractSlurmService):
         regex_pattern = rf"^(JobID\|State\|\n)({job_id})\|(PENDING|RUNNING|SUSPENDED|COMPLETED|CANCELLED by \d*|FAILED|TIMEOUT|NODE_FAIL|PREEMPTED|BOOT_FAIL|DEADLINE|OUT_OF_MEMORY)\|$"
 
         command = ["sacct", "-j", str(job_id), "-o", "JOBID,State", "--parsable", "-X"]
-        logging.debug("running command: %s, `%s`", job_id, " ".join(command))
+        logging.debug("running command: , `%s`", " ".join(command))
 
-        output = subprocess.check_output(command).strip().decode()
+        try:
+            output = subprocess.check_output(command).strip().decode()
+        except subprocess.CalledProcessError as e:
+            logging.error("subprocess error when running command")
+            raise SlurmError(f"Error running {e.cmd}, process error message: {e.stderr}")
+
         logging.debug("command returned: %s", output)
 
         regex_match = re.fullmatch(regex_pattern, output)
@@ -62,8 +67,15 @@ class SlurmService(AbstractSlurmService):
             command += dependency
         command += f" {sbatch}"
         logging.debug("running command: %s", command)
-        proc = subprocess.run(command, check=True, capture_output=True, shell=True)
-        logging.debug("command returned: %s", proc.stdout.decode("utf-8"))
+
+        try:
+            proc = subprocess.run(command, check=True, capture_output=True, shell=True)
+            logging.debug("command returned: %s", proc.stdout.decode("utf-8"))
+        except subprocess.CalledProcessError as e:
+            logging.error("subprocess error when running command")
+            raise SlurmError(f"Error running {e.cmd}, process error message: {e.stderr}")
+
+
 
         # proc.stdout should be "Submitted batch job XXXXXX"
         regex_match = re.match(

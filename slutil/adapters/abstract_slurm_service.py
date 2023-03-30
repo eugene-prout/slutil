@@ -4,7 +4,7 @@ from typing import Optional
 class AbstractSlurmService(ABC):
     @staticmethod
     @abstractmethod
-    def get_job_status(job_id: int, allow_none: bool) -> str:
+    def get_job_status(job_id: int, allow_none: bool) -> Optional[str]:
         raise NotImplementedError
 
     @staticmethod
@@ -16,3 +16,6 @@ class AbstractSlurmService(ABC):
     @abstractmethod
     def test_slurm_accessible() -> bool:
         raise NotImplementedError
+
+class SlurmError(Exception):
+    pass
