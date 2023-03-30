@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2023-03-30)
+### Feature
+* Add [d] to commit tag if dirty repo ([`94ced80`](https://github.com/eugene-prout/slutil/commit/94ced80a6a442538a3556d43667cd0744db26ac2))
+
 ## v0.11.7 (2023-03-30)
 ### Fix
 * Add error handling to slurm commands ([`e363dc7`](https://github.com/eugene-prout/slutil/commit/e363dc7aa0db1ef19306fb62ba7c1d54f47ed3dc))
