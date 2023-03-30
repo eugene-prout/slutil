@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.1 (2023-03-30)
+### Fix
+* Crash when checking status of recently added job ([`8199dd4`](https://github.com/eugene-prout/slutil/commit/8199dd470635de60d4923dd08d87225a4d3c3be6))
+
 ## v0.12.0 (2023-03-30)
 ### Feature
 * Add [d] to commit tag if dirty repo ([`94ced80`](https://github.com/eugene-prout/slutil/commit/94ced80a6a442538a3556d43667cd0744db26ac2))
