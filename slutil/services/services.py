@@ -126,9 +126,9 @@ def update_job_states_nc(
     for j in filter(lambda j: j.in_progress, jobs):
         time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
         allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
-        new_status = JobStatus[slurm_service.get_job_status(j.slurm_id, allow_none)]
-        if new_status:
-            j.status = new_status
+        new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
+        if new_status:  
+            j.status = JobStatus[new_status]
         update_dependencies(slurm_service, uow, j)
 
     return jobs
