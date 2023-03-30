@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.6 (2023-03-30)
+### Fix
+* Add exception handling to git adapter ([`6972993`](https://github.com/eugene-prout/slutil/commit/6972993d91565befc00957114150dd1a3ad8a69a))
+
 ## v0.11.5 (2023-03-07)
 ### Fix
 * Make csv write atomic ([`cbd5643`](https://github.com/eugene-prout/slutil/commit/cbd5643bcc3c48c8678429120b3a6ddb9bf8cc73))
