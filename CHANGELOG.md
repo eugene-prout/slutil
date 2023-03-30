@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.7 (2023-03-30)
+### Fix
+* Add error handling to slurm commands ([`e363dc7`](https://github.com/eugene-prout/slutil/commit/e363dc7aa0db1ef19306fb62ba7c1d54f47ed3dc))
+
 ## v0.11.6 (2023-03-30)
 ### Fix
 * Add exception handling to git adapter ([`6972993`](https://github.com/eugene-prout/slutil/commit/6972993d91565befc00957114150dd1a3ad8a69a))
