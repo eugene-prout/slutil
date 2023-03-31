@@ -1,9 +1,9 @@
 import click
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
-from slutil.cli.cmd_delete import cmd_delete
+from slutil.cli.cmd_hide import cmd_hide
 from slutil.cli.cmd_filter import cmd_filter
-from slutil.cli.cmd_undelete import cmd_undelete
+from slutil.cli.cmd_unhide import cmd_unhide
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
@@ -85,14 +85,14 @@ def command_factory(
         click.Command(
             name="delete",
             context_settings=None,
-            callback=lambda slurm_id, verbose: cmd_delete(
+            callback=lambda slurm_id, verbose: cmd_hide(
                 uow, slurm, slurm_id, verbose
             ),
             params=[
                 click.Argument(["slurm_id"], type=int),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
             ],
-            help=cmd_delete.__doc__,
+            help=cmd_hide.__doc__,
         )
     )
 
@@ -100,11 +100,11 @@ def command_factory(
         click.Command(
             name="restore",
             context_settings=None,
-            callback=lambda slurm_id: cmd_undelete(uow, slurm, slurm_id),
+            callback=lambda slurm_id: cmd_unhide(uow, slurm, slurm_id),
             params=[
                 click.Argument(["slurm_id"], type=int),
             ],
-            help=cmd_undelete.__doc__,
+            help=cmd_unhide.__doc__,
         )
     )
 
