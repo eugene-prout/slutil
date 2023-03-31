@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.1 (2023-03-31)
+### Fix
+* Rename commands ([`ace03d6`](https://github.com/eugene-prout/slutil/commit/ace03d613068dbd8cac7a9be27d3889d769df856))
+
 ## v0.13.0 (2023-03-31)
 ### Feature
 * Add read only views ([`0dd1443`](https://github.com/eugene-prout/slutil/commit/0dd1443c28f8a41d62ae716d2d5f048688e9fea3))
