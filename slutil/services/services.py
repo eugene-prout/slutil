@@ -40,7 +40,7 @@ def unhide_job(uow: AbstractUnitOfWork, slurm_id: int):
         uow.commit()
 
 
-def report(
+def recent(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: int
 ) -> JobListResponse:
     with uow:
@@ -51,6 +51,18 @@ def report(
 
         return map_jobs_to_job_list(output)
 
+def report(
+    slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
+) -> JobListResponse:
+    with uow:
+        if not slurm_service.test_slurm_accessible():
+            raise SlurmNotAccessibleError("cannot access Slurm. Slurm access is required for this command. Please ensure Slurm is accessible before running this command.")
+        all_jobs = uow.jobs.list()
+        jobs = all_jobs
+        output = update_job_states_nc_return_changed(jobs, slurm_service, uow)
+        uow.commit()
+
+        return map_jobs_to_job_list(output)
 
 def submit(
     slurm_service: AbstractSlurmService,
@@ -83,8 +95,8 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
 
 
 def update_job_states_nc(
-    jobs: Iterable[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
-) -> Iterable[Record]:
+    jobs: list[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
+) -> list[Record]:
     for j in filter(lambda j: j.in_progress, jobs):
         try:
             time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
@@ -100,6 +112,30 @@ def update_job_states_nc(
         update_dependencies(slurm_service, uow, j)
 
     return jobs
+
+def update_job_states_nc_return_changed(
+    jobs: list[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
+) -> list[Record]:
+    changed_state = []
+    for j in filter(lambda j: j.in_progress, jobs):
+        try:
+            time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
+            allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
+
+            new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
+            if new_status:  
+                if j.status != JobStatus[new_status]:
+                    changed_state.append(j)
+                j.status = JobStatus[new_status]
+            j.last_updated = datetime.now()
+            j.fresh_read = True
+        except SlurmNotAccessibleError:
+            pass
+
+        update_dependencies(slurm_service, uow, j)
+
+    return changed_state
+
 
 
 def filter_jobs(

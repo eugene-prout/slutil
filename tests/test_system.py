@@ -89,7 +89,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
         assert str(result.exception) == "'No job exists with specified id'"
 
 
-def test_report(fake_slurm, fake_vcs):
+def test_recent(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         original_file_contents = "594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test,2023-02-04 13:39:39,none,none,[],False\n329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2,2023-02-04 13:39:39,none,none,[],False\n"
@@ -98,7 +98,7 @@ def test_report(fake_slurm, fake_vcs):
 
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
-        result = runner.invoke(cmd, ["report"])
+        result = runner.invoke(cmd, ["recent"])
         assert result.exit_code == 0
 
         file_contents = ""
@@ -119,12 +119,12 @@ def test_report(fake_slurm, fake_vcs):
                 assert d in result.output
 
 
-def test_report_no_jobs(fake_slurm, fake_vcs):
+def test_recent_no_jobs(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
-        result = runner.invoke(cmd, ["report"])
+        result = runner.invoke(cmd, ["recent"])
         assert result.exit_code == 0
 
         assert "(No jobs found)" in result.output

@@ -1,7 +1,7 @@
 from slutil.model.Record import Record, JobStatus
 from slutil.services.services import (
     get_job,
-    report,
+    recent,
     filter_jobs,
     FilterQuery,
 )
@@ -55,7 +55,7 @@ def test_report_updates_job(in_memory_uow, fake_slurm):
 
     in_memory_uow.jobs.add(job)
 
-    output = report(fake_slurm, in_memory_uow, 10)
+    output = recent(fake_slurm, in_memory_uow, 10)
 
     assert output.jobs == expected_output
     assert in_memory_uow.commited == True

@@ -3,11 +3,12 @@ from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.cli.cmd_hide import cmd_hide
 from slutil.cli.cmd_filter import cmd_filter
+from slutil.cli.cmd_report import cmd_report
 from slutil.cli.cmd_unhide import cmd_unhide
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
-from slutil.cli.cmd_report import cmd_report
+from slutil.cli.cmd_recent import cmd_recent
 from slutil.cli.cmd_edit import cmd_edit
 import re
 from typing import Optional
@@ -56,13 +57,26 @@ def command_factory(
         click.Command(
             name="report",
             context_settings=None,
-            callback=lambda count, live, verbose: cmd_report(uow, slurm, count, live, verbose),
+            callback=lambda verbose: cmd_report(uow, slurm, verbose),
+            params=[
+                click.Option(["-v", "--verbose"], is_flag=True, default=False)
+            ],
+            help=cmd_report.__doc__,
+        )
+    )
+
+
+    parent_cmd.add_command(
+        click.Command(
+            name="recent",
+            context_settings=None,
+            callback=lambda count, live, verbose: cmd_recent(uow, slurm, count, live, verbose),
             params=[
                 click.Option(["-c", "--count"], default=10),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
                 click.Option(["-l", "--live"], help="infinitely refresh the display with new data", is_flag=True, default=False),
             ],
-            help=cmd_report.__doc__,
+            help=cmd_recent.__doc__,
         )
     )
 
