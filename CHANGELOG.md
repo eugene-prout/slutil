@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2023-03-31)
+### Feature
+* Add read only views ([`0dd1443`](https://github.com/eugene-prout/slutil/commit/0dd1443c28f8a41d62ae716d2d5f048688e9fea3))
+
 ## v0.12.1 (2023-03-30)
 ### Fix
 * Crash when checking status of recently added job ([`8199dd4`](https://github.com/eugene-prout/slutil/commit/8199dd470635de60d4923dd08d87225a4d3c3be6))
