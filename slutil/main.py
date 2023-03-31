@@ -25,7 +25,7 @@ def build_dependencies(debug: bool) -> Dependencies:
 
 
 def start_cli():
-    debug = True
+    debug = False
 
     logging.basicConfig(
         level=logging.DEBUG,
