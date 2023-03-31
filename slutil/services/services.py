@@ -1,50 +1,12 @@
 from datetime import datetime
-from typing import Optional, Iterable, Union
+from typing import Iterable
 from slutil.model.Record import DependencyState, Record, Dependencies, DependencyType, JobStatus, aggregate_depedencies
-from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmNotAccessibleError
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.services.abstract_uow import AbstractUnitOfWork
-from dataclasses import dataclass
 import re
-from functools import total_ordering
+from slutil.services.dto import JobResponse, JobListResponse, JobRequestDTO, FilterQuery, map_job_to_jobResponse, map_jobs_to_job_list
 
-@dataclass(frozen=True)
-@total_ordering
-class JobDTO:
-    slurm_id: int
-    submitted_timestamp: str
-    git_tag: str
-    sbatch: str
-    status: str
-    description: str
-    dependency_type: str
-    dependency_state: str
-    dependency_ids: Union[list[int],list[str]]
-
-    def __gt__(self, other):
-        return self.slurm_id > other.slurm_id
-
-
-@dataclass
-class JobRequestDTO:
-    sbatch: str
-    description: str
-    dependency_type: Optional[str]
-    dependency_list: list[int]
-
-
-def map_job_to_jobDTO(job: Record) -> JobDTO:
-    return JobDTO(
-        job.slurm_id,
-        datetime.strftime(job.submitted_timestamp, "%y-%m-%d %H:%M:%S"),
-        job.git_tag,
-        job.sbatch,
-        job.status.name,
-        job.description,
-        job.dependencies.type.name if job.dependencies else "NONE",
-        job.dependencies.state.name if job.dependencies else "NONE",
-        [str(j) for j in job.dependencies.ids] if job.dependencies else ["NONE"],
-    )
 
 def update_dependencies(slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, job: Record):
     if job.dependencies is not None:
@@ -56,15 +18,14 @@ def update_dependencies(slurm_service: AbstractSlurmService, uow: AbstractUnitOf
 
 def get_job(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, slurm_id: int
-) -> JobDTO:
+) -> JobResponse:
     with uow:
         job = uow.jobs.get(slurm_id)
         update_job_states_nc([job], slurm_service, uow)
 
         uow.commit()
-        return map_job_to_jobDTO(job)
-
-
+        return map_job_to_jobResponse(job)
+    
 def delete_job(uow: AbstractUnitOfWork, slurm_id: int):
     with uow:
         job = uow.jobs.get(slurm_id)
@@ -81,13 +42,14 @@ def undelete_job(uow: AbstractUnitOfWork, slurm_id: int):
 
 def report(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: int
-) -> list[JobDTO]:
+) -> JobListResponse:
     with uow:
         all_jobs = uow.jobs.list()
-        numbers = [j.slurm_id for j in sorted([j for j in all_jobs if not j.deleted], reverse=True)[:count]]
-        output = [get_job(slurm_service, uow, i) for i in numbers]
+        jobs = [j for j in sorted([j for j in all_jobs if not j.deleted], reverse=True)[:count]]
+        output = update_job_states_nc(jobs, slurm_service, uow)
         uow.commit()
-        return output
+
+        return map_jobs_to_job_list(output)
 
 
 def submit(
@@ -105,7 +67,7 @@ def submit(
         else:
             dependencies = None
         new_job = Record(
-            slurm_id, timestamp, repo_stamp, req.sbatch, JobStatus.PENDING, req.description, dependencies
+            slurm_id, timestamp, repo_stamp, req.sbatch, JobStatus.PENDING, req.description, datetime.now(), dependencies
         )
         uow.jobs.add(new_job)
         uow.commit()
@@ -122,31 +84,27 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
 
 def update_job_states_nc(
     jobs: Iterable[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
-):
+) -> Iterable[Record]:
     for j in filter(lambda j: j.in_progress, jobs):
-        time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
-        allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
-        new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
-        if new_status:  
-            j.status = JobStatus[new_status]
+        try:
+            time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
+            allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
+            new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
+            if new_status:  
+                j.status = JobStatus[new_status]
+            j.last_updated = datetime.now()
+            j.fresh_read = True
+        except SlurmNotAccessibleError:
+            pass
+
         update_dependencies(slurm_service, uow, j)
 
     return jobs
 
 
-@dataclass
-class FilterQuery:
-    id_filter: Optional[re.Pattern] = None
-    status_filter: Optional[re.Pattern] = None
-    description_filter: Optional[re.Pattern] = None
-    timestamp_filter: Optional[re.Pattern] = None
-    commit_filter: Optional[re.Pattern] = None
-    sbatch_filter: Optional[re.Pattern] = None
-
-
 def filter_jobs(
     uow: AbstractUnitOfWork, slurm: AbstractSlurmService, query: FilterQuery
-) -> list[JobDTO]:
+) -> JobListResponse:
     with uow:
         matching_jobs = set(update_job_states_nc(uow.jobs.list(), slurm, uow))
 
@@ -187,4 +145,4 @@ def filter_jobs(
                 j for j in matching_jobs if re.search(query.status_filter, j.status.name)
             }
 
-    return [map_job_to_jobDTO(j) for j in matching_jobs]
+    return map_jobs_to_job_list(matching_jobs)

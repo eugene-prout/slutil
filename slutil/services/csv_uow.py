@@ -1,5 +1,6 @@
 import os
 from slutil.adapters.csv_repository import CsvRepository
+from slutil.model.Record import Record
 from slutil.services.abstract_uow import AbstractUnitOfWork
 import csv
 
@@ -10,7 +11,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
     def __init__(self, folder: str):
         self.jobs = CsvRepository(folder)
 
-    def serialise_job(self, job):
+    def serialise_job(self, job: Record):
         dependency_name = job.dependencies.type.name if job.dependencies else "none"
         dependency_state = job.dependencies.state.name if job.dependencies else "none"
         dependency_ids = job.dependencies.ids if job.dependencies else []
@@ -21,6 +22,7 @@ class CsvUnitOfWork(AbstractUnitOfWork):
             job.sbatch,
             job.status.name,
             job.description,
+            job.last_updated.strftime("%Y-%m-%d %H:%M:%S"),
             dependency_name,
             dependency_state,
             dependency_ids,

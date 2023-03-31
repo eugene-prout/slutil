@@ -1,4 +1,4 @@
-from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmError
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmError, SlurmNotAccessibleError
 import subprocess
 import re
 from typing import Optional
@@ -12,7 +12,7 @@ class SlurmService(AbstractSlurmService):
             "getting latest status of job %d, allow_none: %s", job_id, allow_none
         )
         if not SlurmService.test_slurm_accessible():
-            raise OSError("Slurm accessed required but cannot access Slurm")
+            raise SlurmNotAccessibleError("Slurm accessed required but cannot access Slurm")
 
         regex_pattern = rf"^(JobID\|State\|\n)({job_id})\|(PENDING|RUNNING|SUSPENDED|COMPLETED|CANCELLED by \d*|FAILED|TIMEOUT|NODE_FAIL|PREEMPTED|BOOT_FAIL|DEADLINE|OUT_OF_MEMORY)\|$"
 
@@ -52,7 +52,7 @@ class SlurmService(AbstractSlurmService):
         sbatch: str, dependency_type: Optional[str], dependency_list: list[int]
     ) -> int:
         if not SlurmService.test_slurm_accessible():
-            raise OSError("Slurm accessed required but cannot access Slurm")
+            raise SlurmNotAccessibleError("cannot access slurm. Ensure slurm can be accessed before submitting a job.")
 
         logging.debug("submitting slurm job")
 

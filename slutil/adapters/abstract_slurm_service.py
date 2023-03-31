@@ -19,3 +19,6 @@ class AbstractSlurmService(ABC):
 
 class SlurmError(Exception):
     pass
+
+class SlurmNotAccessibleError(Exception):
+    pass

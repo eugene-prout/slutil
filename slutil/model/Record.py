@@ -54,7 +54,10 @@ class Record:
     sbatch: str
     status: JobStatus
     description: str
+    last_updated: datetime
+
     dependencies: Optional[Dependencies] = None
+    fresh_read: bool = False
     deleted: bool = False
 
     def __hash__(self):

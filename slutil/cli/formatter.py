@@ -1,7 +1,7 @@
 from rich.table import Table
 from rich.text import Text
 from rich import box
-from slutil.services.services import JobDTO
+from slutil.services.dto import JobDTO
 from typing import Optional, Iterable
 
 

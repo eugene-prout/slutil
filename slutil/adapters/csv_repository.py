@@ -18,6 +18,7 @@ file_entry = {
     "sbatch": fields.String(),
     "status": fields.Enum(JobStatus),
     "description": fields.String(),
+    "last_updated": fields.DateTime("%Y-%m-%d %H:%M:%S"),
     "dependency_type": fields.Enum(DependencyType, allow_none=True),
     "dependency_state": fields.Enum(DependencyState, allow_none=True),
     "dependency_ids": fields.String(validate=validate.Regexp(r"\[[^\]]*\]")),
@@ -60,6 +61,7 @@ class CsvRepository(AbstractRepository):
                 
                 if "error" in line.keys() or "error" in line.values():
                     raise CSVFormatError(f"CSV format error: line number {line_num} is of an incorrect length, please fix the csv before trying again")
+                
                 errors = file_entry_schema().validate(line)
                 if errors:
                     error_fmt = "\n".join("{} {}".format(k, v) for k, v in errors.items())
@@ -76,8 +78,9 @@ class CsvRepository(AbstractRepository):
                     line["sbatch"],
                     JobStatus[line["status"]],
                     line["description"],
+                    datetime.strptime(line["last_updated"], "%Y-%m-%d %H:%M:%S"),
                     dependency,
-                    line["is_deleted"] == "True",
+                    deleted=line["is_deleted"] == "True",
                 )
                 self._jobs.append(record)
 
