@@ -26,14 +26,14 @@ def get_job(
         uow.commit()
         return map_job_to_jobResponse(job)
     
-def delete_job(uow: AbstractUnitOfWork, slurm_id: int):
+def hide_job(uow: AbstractUnitOfWork, slurm_id: int):
     with uow:
         job = uow.jobs.get(slurm_id)
         job.deleted = True
         uow.commit()
 
 
-def undelete_job(uow: AbstractUnitOfWork, slurm_id: int):
+def unhide_job(uow: AbstractUnitOfWork, slurm_id: int):
     with uow:
         job = uow.jobs.get_deleted(slurm_id)
         job.deleted = False
