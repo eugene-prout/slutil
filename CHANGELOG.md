@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.0 (2023-03-31)
+### Feature
+* Turn on error handling ([`83323a0`](https://github.com/eugene-prout/slutil/commit/83323a0bc6fe9d36fae5845d27ebe6da316a7483))
+* Add diff command ([`f54cd9a`](https://github.com/eugene-prout/slutil/commit/f54cd9a92f0f72c3d71ee45d7bbafed17f2c77a8))
+
+### Fix
+* Rename all report -> recent ([`784fa69`](https://github.com/eugene-prout/slutil/commit/784fa6916d73fbd801cf265fefa61dec54c91e92))
+* Rename report -> recent ([`b18f1d2`](https://github.com/eugene-prout/slutil/commit/b18f1d2c9fc931ed8e1a7a26f28c8708d2d56eec))
+
 ## v0.13.1 (2023-03-31)
 ### Fix
 * Rename commands ([`ace03d6`](https://github.com/eugene-prout/slutil/commit/ace03d613068dbd8cac7a9be27d3889d769df856))
