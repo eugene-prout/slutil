@@ -3,6 +3,7 @@ from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.cli.cmd_hide import cmd_hide
 from slutil.cli.cmd_filter import cmd_filter
+from slutil.cli.cmd_report import cmd_report
 from slutil.cli.cmd_unhide import cmd_unhide
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
@@ -55,6 +56,19 @@ def command_factory(
     parent_cmd.add_command(
         click.Command(
             name="report",
+            context_settings=None,
+            callback=lambda verbose: cmd_report(uow, slurm, verbose),
+            params=[
+                click.Option(["-v", "--verbose"], is_flag=True, default=False)
+            ],
+            help=cmd_report.__doc__,
+        )
+    )
+
+
+    parent_cmd.add_command(
+        click.Command(
+            name="recent",
             context_settings=None,
             callback=lambda count, live, verbose: cmd_recent(uow, slurm, count, live, verbose),
             params=[

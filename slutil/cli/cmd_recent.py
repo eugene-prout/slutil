@@ -27,7 +27,7 @@ def cmd_recent(
     live: bool,
     verbose: bool,
 ):
-    """Get status of multiple jobs"""
+    """Get status of the most recent jobs. Defaults to 10"""
     logging.debug(
         "cli: report requested, count: %d, verbose: %s, live: %s", count, verbose, live
     )
