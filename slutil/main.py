@@ -48,6 +48,7 @@ def start_cli():
         if debug:
             raise e
         else:
+            logging.exception("error inside command group")
             console = Console()
             console.print(f"[red]Error: {str(e)}[/red]")
 

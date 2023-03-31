@@ -40,6 +40,7 @@ def test_status_job(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
+        time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ["status", "329981"])
@@ -49,7 +50,7 @@ def test_status_job(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "r") as f:
             file_contents = f.read()
 
-        assert file_contents == original_file_contents
+        assert file_contents == f"329981,2023-02-04 13:39:39,dddbffe,fake.sbatch,COMPLETED,test,{time},none,none,[],False\n"
 
         # CliRunner.invoke does not respect terminal size, (https://github.com/pallets/click/issues/1997)
         # Accept truncated output here until fixed
@@ -96,6 +97,7 @@ def test_recent(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
+        time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ["recent"])
@@ -105,7 +107,8 @@ def test_recent(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "r") as f:
             file_contents = f.read()
 
-        assert file_contents == original_file_contents
+        assert file_contents == (f"594334,2023-02-04 13:32:47,dddbffe,fake.sbatch,COMPLETED,test,{time},none,none,[],False\n"
+                                  f"329981,2023-02-04 13:39:39,dddbffe,fake2.sbatch,COMPLETED,test2,{time},none,none,[],False\n")
 
         # CliRunner.invoke does not respect terminal size (https://github.com/pallets/click/issues/1997)
         # Accept truncated output here until fixed
@@ -139,6 +142,7 @@ def test_delete_job(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
+        time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ["delete", "400744"], input="y")
@@ -150,7 +154,7 @@ def test_delete_job(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,2023-02-06 14:32:38,none,none,[],True\n"
+            == f"400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,{time},none,none,[],True\n"
         )
 
 
@@ -199,7 +203,7 @@ def test_restore_command(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,2023-02-06 14:32:38,none,none,[],False\n"
+            == f"400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,testing,2023-02-06 14:32:38,none,none,[],False\n"
         )
 
 
@@ -214,7 +218,8 @@ def test_edit_description(fake_slurm, fake_vcs):
         )
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
-
+        
+        time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
         cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
 
         result = runner.invoke(cmd, ["edit", "400744"])
@@ -227,5 +232,5 @@ def test_edit_description(fake_slurm, fake_vcs):
 
         assert (
             file_contents
-            == "400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,new description,2023-02-06 14:32:38,none,none,[],False\n"
+            == f"400744,2023-02-06 14:32:38,abc123,README.md,COMPLETED,new description,{time},none,none,[],False\n"
         )
