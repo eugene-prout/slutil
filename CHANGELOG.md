@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.1 (2023-03-31)
+### Fix
+* Improve timestamps on cached data ([`44ae325`](https://github.com/eugene-prout/slutil/commit/44ae3259cda50ecd248ea6248e9db9974cf471ab))
+
 ## v0.14.0 (2023-03-31)
 ### Feature
 * Turn on error handling ([`83323a0`](https://github.com/eugene-prout/slutil/commit/83323a0bc6fe9d36fae5845d27ebe6da316a7483))
