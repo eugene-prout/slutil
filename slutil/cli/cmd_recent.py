@@ -20,7 +20,7 @@ def create_output(slurm, uow, count, verbose):
     else:
         return create_jobs_table(f"Slurm job status\n[red](Slurm cannot be reached, showing cached data from {response.minimum_updated_time})[/red]", verbose, jobs, caption)
 
-def cmd_report(
+def cmd_recent(
     uow: AbstractUnitOfWork,
     slurm: AbstractSlurmService,
     count: int,
