@@ -1,6 +1,6 @@
 from rich.console import Console
 from slutil.services.abstract_uow import AbstractUnitOfWork
-from slutil.adapters.abstract_slurm_service import AbstractSlurmService
+from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmNotAccessibleError
 from slutil.cli.formatter import create_jobs_table
 from slutil.services.services import get_job, delete_job
 import click
@@ -19,7 +19,7 @@ def cmd_delete(
 
     job_details = get_job(slurm, uow, slurm_id)
     
-    table = create_jobs_table(f"Job {slurm_id}", verbose, [job_details])
+    table = create_jobs_table(f"Job {slurm_id}", verbose, [job_details.job])
     console = Console()
     console.print(table, overflow="ellipsis")
 

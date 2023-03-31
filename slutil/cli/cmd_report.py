@@ -9,13 +9,16 @@ import logging
 
 
 def create_output(slurm, uow, count, verbose):
-    jobs = report(slurm, uow, count)
+    response = report(slurm, uow, count)
+    jobs = response.jobs
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"
-    else:
+    else:   
         caption = "(No jobs found)"
-    return create_jobs_table("Slurm job status", verbose, jobs, caption)
-
+    if response.fresh:
+        return create_jobs_table("Slurm job status", verbose, jobs, caption)
+    else:
+        return create_jobs_table(f"Slurm job status\n[red](Slurm cannot be reached, showing cached data from {response.minimum_updated_time})[/red]", verbose, jobs, caption)
 
 def cmd_report(
     uow: AbstractUnitOfWork,

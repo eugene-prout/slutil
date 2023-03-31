@@ -1,19 +1,18 @@
 from slutil.model.Record import Record, JobStatus
 from slutil.services.services import (
-    JobDTO,
     get_job,
     report,
     filter_jobs,
     FilterQuery,
-    map_job_to_jobDTO,
 )
+from slutil.services.dto import JobDTO, map_job_to_jobDTO
 from datetime import datetime
 import re
 
 
 def test_get_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus["PENDING"], "testing get job")
+    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus["PENDING"], "testing get job", time)
 
     expected_output = JobDTO(
         123456,
@@ -31,14 +30,14 @@ def test_get_job(in_memory_uow, fake_slurm):
 
     output = get_job(fake_slurm, in_memory_uow, job.slurm_id)
 
-    assert output == expected_output
+    assert output.job == expected_output
     assert in_memory_uow.commited == True
     assert in_memory_uow.jobs._jobs == [job]
 
 
 def test_report_updates_job(in_memory_uow, fake_slurm):
     time = datetime.now()
-    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing get job")
+    job = Record(123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing get job", time)
 
     expected_output = [
         JobDTO(
@@ -58,7 +57,7 @@ def test_report_updates_job(in_memory_uow, fake_slurm):
 
     output = report(fake_slurm, in_memory_uow, 10)
 
-    assert output == expected_output
+    assert output.jobs == expected_output
     assert in_memory_uow.commited == True
     assert in_memory_uow.jobs._jobs == [job]
 
@@ -68,16 +67,16 @@ def test_search_description_no_match(in_memory_uow, fake_slurm):
         in_memory_uow, fake_slurm, FilterQuery(status_filter=re.compile("COMPLETED"))
     )
 
-    assert output == []
+    assert output.jobs == []
 
 
 def test_search_description_some_match(in_memory_uow, fake_slurm):
     time = datetime.now()
     job1 = Record(
-        123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing, description"
+        123456, time, "cae42f", "test.sbatch", JobStatus.PENDING, "testing, description", time
     )
-    job2 = Record(123457, time, "cae42f", "test.sbatch", JobStatus.PENDING, "script")
-    job3 = Record(123458, time, "cae42f", "test.sbatch", JobStatus.PENDING, "test")
+    job2 = Record(123457, time, "cae42f", "test.sbatch", JobStatus.PENDING, "script", time)
+    job3 = Record(123458, time, "cae42f", "test.sbatch", JobStatus.PENDING, "test", time)
 
     in_memory_uow.jobs.add(job1)
     in_memory_uow.jobs.add(job2)
@@ -87,4 +86,4 @@ def test_search_description_some_match(in_memory_uow, fake_slurm):
         in_memory_uow, fake_slurm, FilterQuery(description_filter=re.compile("script"))
     )
 
-    assert all(x in [map_job_to_jobDTO(job1), map_job_to_jobDTO(job2)] for x in output)
+    assert all(x in [map_job_to_jobDTO(job1), map_job_to_jobDTO(job2)] for x in output.jobs)

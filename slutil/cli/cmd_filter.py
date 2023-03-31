@@ -44,7 +44,7 @@ def cmd_filter(
     filter_compiled = [null_safe_re_compile(field) for field in fields]
 
     query = FilterQuery(*filter_compiled)
-    matched_jobs = filter_jobs(uow, slurm, query)
+    matched_jobs_response = filter_jobs(uow, slurm, query)
 
     filter_description = []
     if job_id:
@@ -60,10 +60,13 @@ def cmd_filter(
     if sbatch:
         filter_description.append(f"sbatch file matching '{sbatch}'")
 
-    output = f"{(len(matched_jobs))} jobs with: {' and '.join(filter_description)}"
+    title = f"{(len(matched_jobs_response.jobs))} jobs with: {' and '.join(filter_description)}"
+    if not matched_jobs_response.fresh:
+        title += f"\n[red](Slurm cannot be reached, showing cached data from {matched_jobs_response.minimum_updated_time})[/red]"
+
     console = Console()
-    if len(matched_jobs) == 0:
-        console.print(output)
+    if len(matched_jobs_response.jobs) == 0:
+        console.print(title)
     else:
-        table = create_jobs_table(output, verbose, matched_jobs)
+        table = create_jobs_table(title, verbose, matched_jobs_response.jobs)
         console.print(table, overflow="ellipsis")

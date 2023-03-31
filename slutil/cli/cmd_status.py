@@ -13,8 +13,13 @@ def cmd_status(
     SLURM_ID is the id of the job to check.
     """
     logging.debug("cli: status requested job id: %d", slurm_id)
-    job_status = get_job(slurm, uow, slurm_id)
-    table = create_job_table_detailed(f"Job {slurm_id}", verbose, [job_status])
+    job_response = get_job(slurm, uow, slurm_id)
+
+    title = f"Job {slurm_id}"
+    if not job_response.fresh:
+        title += f"\n[red](Slurm cannot be reached, showing cached data from {job_response.updated_time})[/red]"
+
+    table = create_job_table_detailed(title, verbose, [job_response.job])
 
     console = Console()
     console.print(table, overflow="ellipsis")
