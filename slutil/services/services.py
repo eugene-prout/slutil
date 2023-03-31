@@ -97,13 +97,14 @@ def update_description(uow: AbstractUnitOfWork, slurm_id: int, new_description: 
 def update_job_states_nc(
     jobs: list[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
 ) -> list[Record]:
-    for j in filter(lambda j: j.in_progress, jobs):
+    for j in jobs:
         try:
-            time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
-            allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
-            new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
-            if new_status:  
-                j.status = JobStatus[new_status]
+            if j.in_progress:
+                time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
+                allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
+                new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
+                if new_status:  
+                    j.status = JobStatus[new_status]
             j.last_updated = datetime.now()
             j.fresh_read = True
         except SlurmNotAccessibleError:
@@ -117,16 +118,17 @@ def update_job_states_nc_return_changed(
     jobs: list[Record], slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork
 ) -> list[Record]:
     changed_state = []
-    for j in filter(lambda j: j.in_progress, jobs):
+    for j in jobs:
         try:
-            time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
-            allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
+            if j.in_progress:
+                time_difference = (datetime.now() - j.submitted_timestamp).total_seconds() 
+                allow_none = j.status == JobStatus.PENDING and time_difference < 60*30
 
-            new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
-            if new_status:  
-                if j.status != JobStatus[new_status]:
-                    changed_state.append(j)
-                j.status = JobStatus[new_status]
+                new_status = slurm_service.get_job_status(j.slurm_id, allow_none)
+                if new_status:
+                    if j.status != JobStatus[new_status]:
+                        changed_state.append(j)
+                    j.status = JobStatus[new_status]
             j.last_updated = datetime.now()
             j.fresh_read = True
         except SlurmNotAccessibleError:
@@ -181,4 +183,4 @@ def filter_jobs(
                 j for j in matching_jobs if re.search(query.status_filter, j.status.name)
             }
 
-    return map_jobs_to_job_list(matching_jobs)
+    return map_jobs_to_job_list(list(matching_jobs))
