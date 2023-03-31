@@ -40,7 +40,7 @@ def unhide_job(uow: AbstractUnitOfWork, slurm_id: int):
         uow.commit()
 
 
-def report(
+def recent(
     slurm_service: AbstractSlurmService, uow: AbstractUnitOfWork, count: int
 ) -> JobListResponse:
     with uow:

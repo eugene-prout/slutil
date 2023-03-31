@@ -3,13 +3,13 @@ from rich.console import Console
 from rich.live import Live
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService
-from slutil.services.services import report
+from slutil.services.services import recent
 from slutil.cli.formatter import create_jobs_table
 import logging
 
 
 def create_output(slurm, uow, count, verbose):
-    response = report(slurm, uow, count)
+    response = recent(slurm, uow, count)
     jobs = response.jobs
     if len(jobs) > 0:
         caption = f"Showing last {count} jobs"
