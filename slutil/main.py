@@ -1,3 +1,4 @@
+import os
 from rich.console import Console
 from slutil.services.csv_uow import CsvUnitOfWork
 from slutil.services.abstract_uow import AbstractUnitOfWork
@@ -10,22 +11,10 @@ from dataclasses import dataclass
 import logging
 
 
-@dataclass
-class Dependencies:
-    uow: AbstractUnitOfWork
-    slurm: AbstractSlurmService
-    vcs: AbstractVCS
-
-
-def build_dependencies(debug: bool) -> Dependencies:
-    uow = CsvUnitOfWork("")
-    slurm = SlurmService()
-    vcs = Git()
-    return Dependencies(uow, slurm, vcs)
 
 
 def start_cli():
-    debug = False
+    debug = os.getenv("SLUTIL_DEBUG", 'False').lower() in ('true', '1', 't')
 
     logging.basicConfig(
         level=logging.DEBUG,
@@ -33,14 +22,15 @@ def start_cli():
         handlers=[logging.FileHandler("debug.log", "w")],
     )
 
-    dependencies = build_dependencies(debug=debug)
-    logging.debug(
-        "starting cli with %s, %s, %s",
-        dependencies.uow,
-        dependencies.slurm,
-        dependencies.vcs,
-    )
-    c = command_factory(dependencies.uow, dependencies.slurm, dependencies.vcs)
+    logging.debug("starting cli")
+
+    dependencies = {
+        "uow": CsvUnitOfWork(),
+        "slurm_service": SlurmService(),
+        "vcs": Git()
+    }
+
+    c = command_factory(dependencies)
 
     try:
         c()

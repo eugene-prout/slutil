@@ -1,4 +1,5 @@
 import pytest
+from slutil.cli.command_factory import command_factory
 from slutil.model.Record import Record
 from slutil.adapters.abstract_repository import AbstractRepository
 from slutil.adapters.abstract_vcs import AbstractVCS
@@ -6,11 +7,21 @@ from slutil.adapters.abstract_slurm_service import AbstractSlurmService
 from slutil.services.abstract_uow import AbstractUnitOfWork
 import random
 
+from slutil.services.csv_uow import CsvUnitOfWork
+
 
 class FakeRepository(AbstractRepository):
     def __init__(self):
         self._jobs: list[Record] = []
 
+    @staticmethod
+    def create_file():
+        return
+    
+    @staticmethod
+    def find_file():
+        return
+    
     def get(self, job_id):
         try:
             return next(x for x in self._jobs if x.slurm_id == job_id and not x.deleted)
@@ -89,3 +100,11 @@ def fake_slurm():
 @pytest.fixture
 def fake_vcs():
     return FakeVCS()
+
+@pytest.fixture
+def cmd_group():
+    return command_factory({
+        "uow": CsvUnitOfWork(), 
+        "slurm": fake_slurm,
+        "vcs": fake_vcs
+    })

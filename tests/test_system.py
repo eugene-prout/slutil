@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 from click.testing import CliRunner
 from slutil.main import command_factory
@@ -12,7 +13,8 @@ def test_submit_job(fake_slurm, fake_vcs):
         with open("test.sbatch", "w") as f:
             f.write("srun ...")
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        open(".slutil_job_history.csv", "a+").close()
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["submit", "test.sbatch", "test description"])
         assert result.exit_code == 0
@@ -41,7 +43,8 @@ def test_status_job(fake_slurm, fake_vcs):
             f.write(original_file_contents)
 
         time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        open(".slutil_job_history.csv", "a+").close()
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["status", "329981"])
         assert result.exit_code == 0
@@ -75,7 +78,7 @@ def test_status_job_non_existant(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["status", "123456"])
         assert result.exit_code == 1
@@ -98,7 +101,7 @@ def test_recent(fake_slurm, fake_vcs):
             f.write(original_file_contents)
 
         time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["recent"])
         assert result.exit_code == 0
@@ -125,7 +128,8 @@ def test_recent(fake_slurm, fake_vcs):
 def test_recent_no_jobs(fake_slurm, fake_vcs):
     runner = CliRunner()
     with runner.isolated_filesystem():
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        open(".slutil_job_history.csv", "a+").close()
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["recent"])
         assert result.exit_code == 0
@@ -143,7 +147,7 @@ def test_delete_job(fake_slurm, fake_vcs):
             f.write(original_file_contents)
 
         time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["delete", "400744"], input="y")
         assert result.exit_code == 0
@@ -167,7 +171,7 @@ def test_deleted_job_hidden(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["status", "400744"])
         print(result.stdout_bytes.decode())
@@ -191,7 +195,7 @@ def test_restore_command(fake_slurm, fake_vcs):
         with open(".slutil_job_history.csv", "w") as f:
             f.write(original_file_contents)
 
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["restore", "400744"], input="y")
         assert result.exit_code == 0
@@ -220,7 +224,7 @@ def test_edit_description(fake_slurm, fake_vcs):
             f.write(original_file_contents)
         
         time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
-        cmd = command_factory(CsvUnitOfWork(""), fake_slurm, fake_vcs)
+        cmd = command_factory({"uow": CsvUnitOfWork(Path(".slutil_job_history.csv")), "slurm": fake_slurm, "vcs": fake_vcs})
 
         result = runner.invoke(cmd, ["edit", "400744"])
         assert result.exit_code == 0

@@ -1,22 +1,39 @@
+import functools
+import inspect
+from dataclasses import dataclass
 import click
-from slutil.adapters.abstract_slurm_service import AbstractSlurmService
-from slutil.adapters.abstract_vcs import AbstractVCS
 from slutil.cli.cmd_hide import cmd_hide
 from slutil.cli.cmd_filter import cmd_filter
 from slutil.cli.cmd_report import cmd_report
 from slutil.cli.cmd_unhide import cmd_unhide
-from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.cli.cmd_submit import cmd_submit
 from slutil.cli.cmd_status import cmd_status
 from slutil.cli.cmd_recent import cmd_recent
 from slutil.cli.cmd_edit import cmd_edit
+from slutil.cli.cmd_init import cmd_init
 import re
-from typing import Optional
+from typing import Any, Callable, Optional
 
 
-def command_factory(
-    uow: AbstractUnitOfWork, slurm: AbstractSlurmService, vcs: AbstractVCS
-) -> click.Group:
+def inject_dependencies(function, dependencies: dict[str, Callable]):
+    params = inspect.signature(function).parameters
+
+    deps = {
+        name: dependency
+        for name, dependency in dependencies.items()
+        if name in params
+    }
+
+    return functools.partial(function, **deps)
+
+@dataclass
+class CommandSpec:
+    name: str
+    func: Callable
+    params: list[click.Parameter]
+
+
+def command_factory(dependencies: dict[str, Any]) -> click.Group:
     parent_cmd = click.Group()
 
     def validate_dependency_str(ctx, param, value) -> tuple[Optional[str], list[int]]:
@@ -29,13 +46,10 @@ def command_factory(
             raise click.BadParameter("not a supported dependency option")
         return (None, [])
 
-    parent_cmd.add_command(
-        click.Command(
+    commands = [
+        CommandSpec(
             name="submit",
-            context_settings=None,
-            callback=lambda sbatch_file, description, dependency: cmd_submit(
-                uow, slurm, vcs, sbatch_file, description, dependency
-            ),
+            func=cmd_submit,
             params=[
                 click.Argument(
                     ["sbatch_file"], required=True, type=click.Path(exists=True)
@@ -47,108 +61,54 @@ def command_factory(
                     type=str,
                     callback=validate_dependency_str,
                     help="The job's dependencies. In the form ('<type>(:[dependent_id])+' type:=after|afterany|afternotok|afterok) or 'singleton' e.g. 'afterok:123456:345678'"
-                ),
-            ],
-            help=cmd_submit.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+                )]),
+        CommandSpec(
             name="report",
-            context_settings=None,
-            callback=lambda verbose: cmd_report(uow, slurm, verbose),
+            func=cmd_report,
             params=[
                 click.Option(["-v", "--verbose"], is_flag=True, default=False)
-            ],
-            help=cmd_report.__doc__,
-        )
-    )
-
-
-    parent_cmd.add_command(
-        click.Command(
+            ]),
+        CommandSpec(
             name="recent",
-            context_settings=None,
-            callback=lambda count, live, verbose: cmd_recent(uow, slurm, count, live, verbose),
+            func=cmd_recent,
             params=[
                 click.Option(["-c", "--count"], default=10),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
-                click.Option(["-l", "--live"], help="infinitely refresh the display with new data", is_flag=True, default=False),
-            ],
-            help=cmd_recent.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+                click.Option(
+                    ["-l", "--live"], help="infinitely refresh the display with new data", is_flag=True, default=False),
+            ]),
+        CommandSpec(
             name="status",
-            context_settings=None,
-            callback=lambda slurm_id, verbose: cmd_status(
-                uow, slurm, slurm_id, verbose
-            ),
+            func=cmd_status,
             params=[
                 click.Argument(["slurm_id"], type=int),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
-            ],
-            help=cmd_status.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+            ]),
+        CommandSpec(
             name="delete",
-            context_settings=None,
-            callback=lambda slurm_id, verbose: cmd_hide(
-                uow, slurm, slurm_id, verbose
-            ),
+            func=cmd_hide,
             params=[
                 click.Argument(["slurm_id"], type=int),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
             ],
-            help=cmd_hide.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+        ),
+        CommandSpec(
             name="restore",
-            context_settings=None,
-            callback=lambda slurm_id: cmd_unhide(uow, slurm, slurm_id),
+            func=cmd_unhide,
             params=[
                 click.Argument(["slurm_id"], type=int),
             ],
-            help=cmd_unhide.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+        ),
+        CommandSpec(
             name="edit",
-            context_settings=None,
-            callback=lambda slurm_id: cmd_edit(uow, slurm, slurm_id),
+            func=cmd_edit,
             params=[
                 click.Argument(["slurm_id"], type=int),
-            ],
-            help=cmd_edit.__doc__,
-        )
-    )
-
-    parent_cmd.add_command(
-        click.Command(
+            ]
+        ),
+        CommandSpec(
             name="filter",
-            context_settings=None,
-            callback=lambda job_id, status, description, submit_time, commit, sbatch, verbose: cmd_filter(
-                uow,
-                slurm,
-                job_id,
-                status,
-                description,
-                submit_time,
-                commit,
-                sbatch,
-                verbose,
-            ),
+            func=cmd_filter,
             params=[
                 click.Option(
                     ["-j", "--job-id"],
@@ -188,8 +148,22 @@ def command_factory(
                 ),
                 click.Option(["-v", "--verbose"], is_flag=True, default=False),
             ],
-            help=cmd_filter.__doc__,
+        ),
+        CommandSpec(
+            name="init",
+            func=cmd_init,
+            params=[]
         )
-    )
+    ]
+
+    for c in commands:
+        parent_cmd.add_command(
+            click.Command(
+                name=c.name,
+                callback=inject_dependencies(c.func, dependencies),
+                params=c.params,
+                help=c.func.__doc__,
+            )
+        )
 
     return parent_cmd
