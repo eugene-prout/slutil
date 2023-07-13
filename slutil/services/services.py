@@ -184,3 +184,7 @@ def filter_jobs(
             }
 
     return map_jobs_to_job_list(list(matching_jobs))
+
+
+def create_repository_file(uow: AbstractUnitOfWork):
+    uow.jobs.create_file()

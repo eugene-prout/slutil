@@ -1,6 +1,7 @@
 from pathlib import Path
 import csv
 import ast
+from typing import Optional
 
 from marshmallow import Schema, fields, validate
 from slutil.adapters.abstract_repository import AbstractRepository
@@ -28,12 +29,35 @@ file_entry = {
 file_entry_schema = Schema.from_dict(file_entry)
 
 class CsvRepository(AbstractRepository):
-    def __init__(self, folder: str):
-        self.csv_path = Path(folder) / ".slutil_job_history.csv"
-        f = open(self.csv_path, "a+")
-        f.close()
+    def __init__(self, csv_path: Optional[Path]=None):
         self._jobs: list[Record] = []
-        self._load()
+        
+        if csv_path:
+            self.csv_path = csv_path
+        else:
+            self.csv_path = self.find_file()
+        
+        if self.csv_path:
+            self._load()
+
+    @staticmethod
+    def create_file():
+        open(".slutil_job_history.csv", "a+").close() 
+
+    @staticmethod
+    def find_file() -> Optional[Path]:
+        filename = ".slutil_job_history.csv"
+        file_path = Path.cwd() / filename
+
+        if file_path.exists():
+            return file_path
+
+        for directory in Path.cwd().parents:
+            file_path = directory / filename
+            if file_path.exists():
+                return file_path
+            
+        return None 
 
     def get(self, job_id: int) -> Record:
         try:
@@ -51,6 +75,9 @@ class CsvRepository(AbstractRepository):
         self._jobs.append(job)
 
     def _load(self):
+        if self.csv_path is None:
+            raise ValueError("csv_repository attempting to load from csv_path=None")
+        
         with open(self.csv_path, mode="r") as csvfile:
             reader = csv.DictReader(csvfile, list(file_entry.keys()), restval="error", restkey="error")
             for line_num, line in enumerate(reader, 1):

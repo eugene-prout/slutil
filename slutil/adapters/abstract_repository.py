@@ -1,8 +1,19 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Optional
 from slutil.model.Record import Record
 
-
 class AbstractRepository(ABC):
+    @staticmethod
+    @abstractmethod
+    def create_file() -> None:
+        raise NotImplementedError
+    
+    @staticmethod
+    @abstractmethod
+    def find_file() -> Optional[Path]:
+        raise NotImplementedError
+    
     @abstractmethod
     def add(self, job: Record) -> None:
         raise NotImplementedError
