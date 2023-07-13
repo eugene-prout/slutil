@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2023-07-13)
+
+### Feature
+
+* Add init command ([`e61fc69`](https://github.com/eugene-prout/slutil/commit/e61fc6997d04186e3234187b9b17906a58aad661))
+
 ## v0.14.1 (2023-03-31)
 ### Fix
 * Improve timestamps on cached data ([`44ae325`](https://github.com/eugene-prout/slutil/commit/44ae3259cda50ecd248ea6248e9db9974cf471ab))
