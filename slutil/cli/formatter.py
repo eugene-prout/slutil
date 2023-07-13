@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from rich.table import Table
 from rich.text import Text
 from rich import box

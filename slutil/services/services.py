@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from typing import Iterable
 from slutil.model.Record import DependencyState, Record, Dependencies, DependencyType, JobStatus, aggregate_depedencies

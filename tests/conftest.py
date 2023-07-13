@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from slutil.cli.command_factory import command_factory
 from slutil.model.Record import Record
