@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from slutil.adapters.abstract_slurm_service import AbstractSlurmService, SlurmError, SlurmNotAccessibleError
 import subprocess
 import re

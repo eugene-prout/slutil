@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import click
 from slutil.services.abstract_uow import AbstractUnitOfWork
 from slutil.adapters.abstract_vcs import AbstractVCS
