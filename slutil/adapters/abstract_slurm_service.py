@@ -18,6 +18,11 @@ class AbstractSlurmService(ABC):
     @abstractmethod
     def test_slurm_accessible() -> bool:
         raise NotImplementedError
+    
+    @staticmethod
+    @abstractmethod
+    def recover_job_data(job_id: int, allow_none: bool) -> Optional[dict]:
+        raise NotImplementedError
 
 class SlurmError(Exception):
     pass

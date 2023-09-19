@@ -190,3 +190,26 @@ def filter_jobs(
 
 def create_repository_file(uow: AbstractUnitOfWork):
     uow.jobs.create_file()
+
+def load_record_from_slurm(uow: AbstractUnitOfWork, slurm: AbstractSlurmService, job_id: int, overwrite: bool):
+    with uow:
+        data_from_slurm = slurm.recover_job_data(job_id, False)
+        try:
+            data_from_uow = uow.jobs.get(job_id)
+        except KeyError:
+            data_from_uow = None
+
+        if conflict(data_from_slurm, data_from_uow) and not overwrite:
+            raise ValueError("Data is in conflict but no --overwrite flag set")
+        
+        if overwrite:
+            new_record = merge_records(data_from_slurm, data_from_uow)
+        else:
+            new_record = merge_records(data_from_uow, data_from_slurm)
+
+        data_from_uow = new_record
+
+        uow.commit()
+        
+def merge_records(primary, secondary):
+    pass
